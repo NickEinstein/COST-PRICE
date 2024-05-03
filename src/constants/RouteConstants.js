@@ -8,6 +8,9 @@ export const RouteEnum = {
   DASHBOARD: "/dashboard",
   ANALYTICS: "/analytics",
   NEW_PRODUCT_PAGE: "/new-product",
+  MERCHANT_MANAGEMENT: "/merchant-management",
+  MERCHANT_DETAILS: "/merchant-details",
+  
   
   
   SIGNUPCLIENT: "/signup-client",

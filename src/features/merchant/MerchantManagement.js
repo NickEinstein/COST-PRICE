@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import UserApi from "apis/UserApi";
 import moment from "moment";
-import gigLogo from "images/Ellipse 56.png";
+import gigLogo from "assets/merchant/MerchantAvatar.svg";
 
 import {
   Button,
@@ -23,6 +23,7 @@ import {
   Tab,
   InputAdornment,
   Divider,
+  Paper,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -39,6 +40,7 @@ import { AiFillDelete } from "react-icons/ai";
 import { TiEye } from "react-icons/ti";
 import fileUpload from "assets/dashboard/file upload states.svg";
 import { message, Upload } from "antd";
+import { RouteEnum } from "constants/RouteConstants";
 
 function Trips() {
   const [open, setOpen] = React.useState(false);
@@ -54,7 +56,7 @@ function Trips() {
   const history = useNavigate();
 
   const redirect = () => {
-    history("/new-product")
+    history("/new-product");
   };
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -239,21 +241,28 @@ function Trips() {
   const data = [
     {
       id: "#0007366388",
+      merchName: "Adeyemi Adekanmi",
       name: "Relaxer",
+      merchPrice: "N 3009",
       age: "Hair Care",
       city: "N 12344",
       country: "PENDING",
     },
     {
       id: "#0007366388",
+      merchName: "Adeyemi Adekanmi",
       name: "Relaxer",
+      merchPrice: "N 3009",
       age: "Hair Care",
+      city: "N 12344",
       city: "N 12344",
       country: "PENDING",
     },
     {
       id: "#0007366388",
+      merchName: "Adeyemi Adekanmi",
       name: "Relaxer",
+      merchPrice: "N 3009",
       age: "Hair Care",
       city: "N 12344",
       country: "PENDING",
@@ -312,7 +321,7 @@ function Trips() {
             Product Management
           </Typography>
 
-          <Button onClick={() => redirect()}> Add New Product</Button>
+          <Button> Export</Button>
         </div>
       </div>
       {true && (
@@ -327,12 +336,8 @@ function Trips() {
               aria-label="secondary tabs example"
             >
               <Tab className="bg-transparent" value="one" label="All" />
-              <Tab className="bg-transparent" value="two" label="Available" />
-              <Tab
-                className="bg-transparent"
-                value="three"
-                label="Unavailable"
-              />
+              <Tab className="bg-transparent" value="two" label="Approved" />
+              <Tab className="bg-transparent" value="three" label="Declined" />
             </Tabs>
           </Box>
 
@@ -422,7 +427,9 @@ function Trips() {
             <TableHead>
               <TableRow>
                 <TableCell className="text-[#8B909A]">PRODUCT NO</TableCell>
+                <TableCell className="text-[#8B909A]">MERCHANT NAME</TableCell>
                 <TableCell className="text-[#8B909A]">PRODUCT NAME</TableCell>
+                <TableCell className="text-[#8B909A]">MERCHANT PRICE</TableCell>
                 <TableCell className="text-[#8B909A]">CATEGORY</TableCell>
                 <TableCell className="text-[#8B909A]">PRICE</TableCell>
                 <TableCell className="text-[#8B909A]">STATUS</TableCell>
@@ -441,7 +448,9 @@ function Trips() {
                     </div>
                   </TableCell>
 
+                  <TableCell>{row.merchName}</TableCell>
                   <TableCell>{row.age}</TableCell>
+                  <TableCell>{row.merchPrice}</TableCell>
                   <TableCell>{row.city}</TableCell>
                   <TableCell>
                     <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center w-4/5">
@@ -465,9 +474,6 @@ function Trips() {
                         horizontal: "right",
                       }}
                     >
-                      <MenuItem className="flex gap-2" onClick={handleClose}>
-                        <AiFillEdit /> Edit
-                      </MenuItem>
                       <MenuItem className="flex gap-2" onClick={handleClose}>
                         <TiEye /> View
                       </MenuItem>
@@ -565,7 +571,142 @@ function Trips() {
       </Modal>
 
       {/* Personal Info */}
-    
+
+      <Paper className="p-[5%] mt-4">
+        <div className="flex items-start gap-4 w-full ">
+          <img className="w-[90px]" src={gigLogo} />
+          <div className="w-full ">
+            <div className="w-full ">
+              <div className="flex items-center gap-5">
+                <Typography variant="h5">Iya Sodiq</Typography>
+                <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center">
+                  Pending
+                </Typography>
+              </div>
+              <div className="w-full flex gap-3 items-center ">
+                <Typography className="text-[#0F973D] min-w-[150px] ">
+                  0 verified Products
+                </Typography>
+                <div className="flex items-center w-full">
+                  <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+                  <Typography className="p-1">
+                    9 total products listed
+                  </Typography>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-[20%] w-full">
+              <div className="w-full">
+                <Divider />
+                <div className="flex justify-between mt-5">
+                  <Typography className="font-bold">Email:</Typography>
+                  <Typography className="text-[#8A9099]">
+                    abc@yahoo.com
+                  </Typography>
+                </div>
+                <div className="flex justify-between mt-5">
+                  <Typography className="font-bold">Phone</Typography>
+                  <Typography className="text-[#8A9099]">
+                    080 (993) 88374
+                  </Typography>
+                </div>
+              </div>
+              <div className="w-full">
+                <Divider />
+                <div className="flex justify-between mt-5">
+                  <Typography className="font-bold">Merchant Type:</Typography>
+                  <Typography className="text-[#8A9099]">
+                    Distributor
+                  </Typography>
+                </div>
+                <div className="flex justify-between mt-5">
+                  <Typography className="font-bold">Location</Typography>
+                  <Typography className="text-[#8A9099]">
+                    Socch, Russia
+                  </Typography>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <Typography variant="h5" className="text-primary-main font-bold mt-16">
+          Products Claimed
+        </Typography>
+
+        <Table className="bg-white mt-8">
+          <TableHead>
+            <TableRow>
+              <TableCell className="text-[#8B909A]">PRODUCT NO</TableCell>
+              <TableCell className="text-[#8B909A]">MERCHANT NAME</TableCell>
+              <TableCell className="text-[#8B909A]">PRODUCT NAME</TableCell>
+              <TableCell className="text-[#8B909A]">MERCHANT PRICE</TableCell>
+              <TableCell className="text-[#8B909A]">CATEGORY</TableCell>
+              <TableCell className="text-[#8B909A]">PRICE</TableCell>
+              <TableCell className="text-[#8B909A]">STATUS</TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell>{row.id}</TableCell>
+                <TableCell className="flex gap-2">
+                  <img className="w-8 h-8" src={gigLogo} />
+                  <div>
+                    <o>{row.name}</o>
+                    <p className="text-ssm">{row.name}</p>{" "}
+                  </div>
+                </TableCell>
+
+                <TableCell>{row.merchName}</TableCell>
+                <TableCell>{row.age}</TableCell>
+                <TableCell>{row.merchPrice}</TableCell>
+                <TableCell>{row.city}</TableCell>
+                <TableCell>
+                  <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center w-4/5">
+                    {row.country}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <IconButton onClick={handleClick}>
+                    <AiOutlineMore />
+                  </IconButton>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                  >
+                    {/* <MenuItem className="flex gap-2" onClick={handleClose}>
+                      <AiFillEdit /> View
+                    </MenuItem> */}
+                    <MenuItem
+                      className="flex gap-2"
+                      onClick={() => {
+                        handleClose();
+                        history(RouteEnum.MERCHANT_DETAILS);
+                      }}
+                    >
+                      <TiEye /> View
+                    </MenuItem>
+                    <MenuItem className="flex gap-2" onClick={handleClose}>
+                      <AiFillDelete /> Delete
+                    </MenuItem>
+                  </Menu>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Paper>
     </div>
   );
 }

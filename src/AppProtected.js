@@ -58,6 +58,14 @@ const ROUTES = configureRoutes([
     element: lazy(() => import("features/manageCompanies/History")),
   },
   {
+    path: RouteEnum.MERCHANT_MANAGEMENT,
+    element: lazy(() => import("features/merchant/MerchantManagement")),
+  },
+  {
+    path: RouteEnum.MERCHANT_DETAILS,
+    element: lazy(() => import("features/merchant/MerchantDetails")),
+  },
+  {
     path: RouteEnum.MANAGE_RIDERS,
     element: lazy(() => import("features/wallet/Wallet")),
   },

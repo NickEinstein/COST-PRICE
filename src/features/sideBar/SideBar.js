@@ -68,7 +68,7 @@ export default function PermanentDrawerLeft() {
     {
       name: "Merchants",
       imageboolean: true,
-      // d: RouteEnum.TRIPS,
+      d: RouteEnum.MERCHANT_MANAGEMENT,
       image: smartCar,
       image2: smartCarW,
       color: false,
