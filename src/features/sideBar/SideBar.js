@@ -165,7 +165,7 @@ export default function PermanentDrawerLeft() {
             </ListItem>
           ))}
         </List>
-        {/* <Divider />
+        <Divider />
         <List>
           {outcasts.map((text, index) => (
             <ListItem
@@ -181,7 +181,7 @@ export default function PermanentDrawerLeft() {
               </ListItemButton>
             </ListItem>
           ))}
-        </List> */}
+        </List>
       </Drawer>
     </Box>
   );

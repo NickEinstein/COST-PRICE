@@ -22,14 +22,14 @@ const slice = createSlice({
     builder
       .addCase(logoutAction, () => ({ ...globalInitialState }))
       .addMatcher(UserApi.endpoints.login.matchFulfilled, (state, payload) => {
-
-     
-         state.authUser = {
-           accessToken: payload.payload.data?.jwtAccessToken,
-           ...payload.payload.data?.user,
-         };
+        // console.log(payload.payload.data);
+        state.authUser = {
+          accessToken: payload?.payload?.token,
+          ...payload.payload.data,
+        };
       })
       .addMatcher(UserApi.endpoints.signup.matchFulfilled, (state, payload) => {
+        // console.log(payload.payload.token);
         state.authUser = {
           accessToken: payload.data?.accessToken,
           ...payload.data?.profile,

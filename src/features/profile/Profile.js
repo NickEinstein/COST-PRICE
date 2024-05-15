@@ -32,9 +32,12 @@ import { AiFillWarning } from "react-icons/ai";
 function ManageRiders() {
   const authUser = useAuthUser();
 
+  console.log(authUser);
+
   const [address, setAddress] = React.useState(authUser?.address);
+  const [name, setName] = React.useState(authUser?.name);
   const [city, setCity] = React.useState(authUser?.city);
-  const [phoneNumber, setPhoneNumber] = React.useState(authUser?.phoneNo);
+  const [phoneNumber, setPhoneNumber] = React.useState(authUser?.phone_number);
   const [state, setState] = React.useState(authUser?.state);
   const [email, setEmail] = useState(authUser?.email);
   const [companyName, setCompanyName] = useState(authUser?.fname);
@@ -50,26 +53,40 @@ function ManageRiders() {
   const [profilePic, setProfilePic] = useState();
   const [idPic, setidPic] = useState();
 
-  const getUserQueryResult = UserApi?.useGetUserQuery({ userId, count });
-  const user = getUserQueryResult?.data;
+  // const getUserQueryResult = UserApi?.useGetUserQuery({ userId, count });
+  // const user = getUserQueryResult?.data;
 
-  let yy = {
-    fname: companyName,
-    email: email,
-    phoneNo: phoneNumber,
-    address: address,
-    city: city,
-    state: state,
-    country: country,
+  const [basicProfileMuation, basicProfileMutationResult] =
+    UserApi.useAddBasicProfileMutation();
 
-    _id: userId,
+  const updateBasicProfile = async (values) => {
+    try {
+      const data = await basicProfileMuation({
+        data: {
+          name: name,
+          email: email,
+          phone_number: phoneNumber,
+        },
+      }).unwrap();
+      // TODO extra login
+      // redirect();
+      enqueueSnackbar("Updated Successfully", {
+        variant: "success",
+      });
+      // setreloadProduct(!reloadProduct);
+    } catch (error) {
+      enqueueSnackbar(error?.data?.message, "Failed to login", {
+        variant: "error",
+      });
+    }
+    // submitForm(values)
   };
 
   const { enqueueSnackbar } = useSnackbar();
-  const [updateUserMuation, updateUserMutationResult] =
-    UserApi.useUpdateUserMutation();
-  const [updateUserUploadMuation, updateUserUploadMutationResult] =
-    UserApi.useUpdateUserUploadMutation();
+  // const [updateUserMuation, updateUserMutationResult] =
+  //   UserApi.useUpdateUserMutation();
+  // const [updateUserUploadMuation, updateUserUploadMutationResult] =
+  //   UserApi.useUpdateUserUploadMutation();
 
   const { Dragger } = Upload;
   const props = {
@@ -113,311 +130,338 @@ function ManageRiders() {
       <ToDoorSearch />
       {/* Personal Info */}
       <div>
-      <Box sx={{ width: "100%" }}>
-            <Tabs
-              value={valuez}
-              onChange={handleChangeTab}
-              textColor="secondary"
-              indicatorColor="secondary"
-              className="m-2"
-              aria-label="secondary tabs example"
-            >
-              <Tab className="bg-transparent" value="one" label="Basic Details" />
-              <Tab className="bg-transparent" value="two" label="Business Details" />
-              <Tab
-                className="bg-transparent"
-                value="three"
-                label="KYC"
-              />
-               <Tab
-                className="bg-transparent"
-                value="four"
-                label="PASSWORDS"
-              />
-            </Tabs>
-          </Box>
+        <Box sx={{ width: "100%" }}>
+          <Tabs
+            value={valuez}
+            onChange={handleChangeTab}
+            textColor="secondary"
+            indicatorColor="secondary"
+            className="m-2"
+            aria-label="secondary tabs example"
+          >
+            <Tab className="bg-transparent" value="one" label="Basic Details" />
+            <Tab
+              className="bg-transparent"
+              value="two"
+              label="Business Details"
+            />
+            <Tab className="bg-transparent" value="three" label="KYC" />
+            <Tab className="bg-transparent" value="four" label="PASSWORDS" />
+          </Tabs>
+        </Box>
       </div>
-    {valuez == 'one' && <div className="p-8 bg-white">
-        <Typography className="font-bold">Basic Info</Typography>
-        <Typography className="text-[#A3AED0]">
-          Update photo and personal Details here
-        </Typography>
+      {valuez == "one" && (
+        <div className="p-8 bg-white">
+          <Typography className="font-bold">Basic Info</Typography>
+          <Typography className="text-[#A3AED0]">
+            Update photo and personal Details here
+          </Typography>
 
-        <Divider />
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <Typography className="w-1/5 font-bold">Name</Typography>
-            <div className="w-full w-3/5">
-              <Typography className="font-bold">Fullname</Typography>
-              <TextField className="w-full" fullWidth />
-            </div>
-          </div>
           <Divider />
-        </div>
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <Typography className="w-1/5 font-bold">Email Address</Typography>
-            <div className="w-full w-3/5">
-              <TextField className="w-full" fullWidth />
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <Typography className="w-1/5 font-bold">Name</Typography>
+              <div className="w-full w-3/5">
+                <Typography className="font-bold">Fullname</Typography>
+                <TextField
+                  onChange={(e) => setName(e.target.value)}
+                  name="name"
+                  value={name}
+                  className="w-full"
+                  fullWidth
+                />
+              </div>
             </div>
+            <Divider />
           </div>
-          <Divider />
-        </div>
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <Typography className="w-1/5 font-bold">Phone number</Typography>
-            <div className="w-full w-3/5">
-              <TextField className="w-full" fullWidth />
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <Typography className="w-1/5 font-bold">Email Address</Typography>
+              <div className="w-full w-3/5">
+                <TextField
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full"
+                  fullWidth
+                />
+              </div>
             </div>
+            <Divider />
           </div>
-          <Divider />
-        </div>
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <Typography className="w-1/5 font-bold">Phone number</Typography>
+              <div className="w-full w-3/5">
+                <TextField
+                  name="phoneNumber"
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  value={phoneNumber}
+                  className="w-full"
+                  fullWidth
+                />
+              </div>
+            </div>
+            <Divider />
+          </div>
 
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <div className="w-2/5">
-              <Typography className="font-bold">Your Photo</Typography>
-              <Typography>This will be displayed on your profile</Typography>
-            </div>
-            <div className="w-3/5 flex gap-5">
-              <Avatar />
-              <Dragger
-                className="h-60 w-full text-center flex flex-col justify-center items-center"
-                {...props}
-              >
-                <div className="ant-upload-drag-icon flex justify-center w-full">
-                  <img src={fileUpload} />
-                </div>
-                <p className="ant-upload-text">
-                  <span className="text-[#EB5017] font-bold">
-                    Click Upload{" "}
-                  </span>
-                  or Drag and drop
-                </p>
-                <p className="ant-upload-hint text-[#98A2B3]">
-                  PNG, JPG or GIF (max. 800x400px)
-                </p>
-              </Dragger>
-              {/* <Card className="h-60 w-full text-center flex flex-col justify-center">
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <div className="w-2/5">
+                <Typography className="font-bold">Your Photo</Typography>
+                <Typography>This will be displayed on your profile</Typography>
+              </div>
+              <div className="w-3/5 flex gap-5">
+                <Avatar />
+                <Dragger
+                  className="h-60 w-full text-center flex flex-col justify-center items-center"
+                  {...props}
+                >
+                  <div className="ant-upload-drag-icon flex justify-center w-full">
+                    <img src={fileUpload} />
+                  </div>
+                  <p className="ant-upload-text">
+                    <span className="text-[#EB5017] font-bold">
+                      Click Upload{" "}
+                    </span>
+                    or Drag and drop
+                  </p>
+                  <p className="ant-upload-hint text-[#98A2B3]">
+                    PNG, JPG or GIF (max. 800x400px)
+                  </p>
+                </Dragger>
+                {/* <Card className="h-60 w-full text-center flex flex-col justify-center">
                
               </Card> */}
+              </div>
+            </div>
+            <Divider />
+          </div>
+
+          <div className="flex w-full mt-4 mb-8">
+            <div className="ml-auto flex gap-2">
+              <Button>Cancel</Button>
+              <Button onClick={updateBasicProfile}>
+                Update Details Details
+              </Button>
             </div>
           </div>
-          <Divider />
         </div>
-
-        <div className="flex w-full mt-4 mb-8">
-          <div className="ml-auto flex gap-2">
-            <Button>Cancel</Button>
-            <Button>Edit Product</Button>
-          </div>
-        </div>
-      </div>}
+      )}
 
       {/* Company Info */}
-   {valuez == 'two' &&   <div className="p-8 bg-white">
-        <Typography className="font-bold">Business Details</Typography>
-        <Typography className="text-[#A3AED0]">
-          Update business logo and key information
-        </Typography>
+      {valuez == "two" && (
+        <div className="p-8 bg-white">
+          <Typography className="font-bold">Business Details</Typography>
+          <Typography className="text-[#A3AED0]">
+            Update business logo and key information
+          </Typography>
 
-        <Divider />
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <Typography className="w-1/5 font-bold">Name</Typography>
-            <div className="w-full w-3/5">
-              <Typography>Company Name</Typography>
-              <TextField className="w-full" fullWidth />
-            </div>
-          </div>
           <Divider />
-        </div>
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <Typography className="w-1/5 font-bold">Company Address</Typography>
-            <div className="w-full w-3/5">
-              <TextField className="w-full" fullWidth />
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <Typography className="w-1/5 font-bold">Name</Typography>
+              <div className="w-full w-3/5">
+                <Typography>Company Name</Typography>
+                <TextField className="w-full" fullWidth />
+              </div>
             </div>
+            <Divider />
           </div>
-          <Divider />
-        </div>
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <Typography className="w-1/5 font-bold">
-              Industry Category
-            </Typography>
-            <div className="w-full w-3/5">
-              <TextField className="w-full" fullWidth />
-            </div>
-          </div>
-          <Divider />
-        </div>
-
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <Typography className="w-1/5 font-bold">COmpany Reg No</Typography>
-            <div className="w-full w-3/5">
-              <TextField className="w-full" fullWidth />
-            </div>
-          </div>
-          <Divider />
-        </div>
-
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <Typography className="w-1/5 font-bold">
-              Tax Identification No.
-            </Typography>
-            <div className="w-full w-3/5">
-              <TextField className="w-full" fullWidth />
-            </div>
-          </div>
-          <Divider />
-        </div>
-
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <div className="w-2/5">
-              <Typography>Description</Typography>
-              <Typography>write a short introduction</Typography>
-            </div>
-            <div className="w-full w-3/5">
-              <TextField multiline rows={5} className="w-full" fullWidth />
-            </div>
-          </div>
-          <Divider />
-        </div>
-
-        <div className="flex w-full mt-4 mb-8">
-          <div className="ml-auto flex gap-2">
-            <Button>Cancel</Button>
-            <Button>Edit Product</Button>
-          </div>
-        </div>
-      </div>
-}
-      {/* KYC Info */}
-   {valuez == 'three' &&   <div className="p-8 bg-white">
-        <Typography className="font-bold">KYC</Typography>
-        <Typography className="text-[#A3AED0]">Complete your KYC</Typography>
-
-        <Divider />
-
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <div className="w-2/5">
-              <Typography className="font-bold">
-                Address Verification
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <Typography className="w-1/5 font-bold">
+                Company Address
               </Typography>
-              <Typography>Upload utility bill</Typography>
+              <div className="w-full w-3/5">
+                <TextField className="w-full" fullWidth />
+              </div>
             </div>
-            <div className="w-3/5 flex gap-5">
-            <Dragger
-                className="h-60 w-full text-center flex flex-col justify-center items-center"
-                {...props}
-              >
-                <div className="ant-upload-drag-icon flex justify-center w-full">
-                  <img src={fileUpload} />
-                </div>
-                <p className="ant-upload-text">
-                  <span className="text-[#EB5017] font-bold">
-                    Click Upload{" "}
-                  </span>
-                  or Drag and drop
-                </p>
-                <p className="ant-upload-hint text-[#98A2B3]">
-                  PNG, JPG or GIF (max. 800x400px)
-                </p>
-              </Dragger>
-            </div>
+            <Divider />
           </div>
-          <Divider />
-        </div>
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <Typography className="w-1/5 font-bold">
+                Industry Category
+              </Typography>
+              <div className="w-full w-3/5">
+                <TextField className="w-full" fullWidth />
+              </div>
+            </div>
+            <Divider />
+          </div>
 
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <div className="w-2/5">
-              <Typography className="font-bold">CAC Verification</Typography>
-              <Typography>Upload CAC certificate</Typography>
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <Typography className="w-1/5 font-bold">
+                COmpany Reg No
+              </Typography>
+              <div className="w-full w-3/5">
+                <TextField className="w-full" fullWidth />
+              </div>
             </div>
-            <div className="w-3/5 flex gap-5">
-            <Dragger
-                className="h-60 w-full text-center flex flex-col justify-center items-center"
-                {...props}
-              >
-                <div className="ant-upload-drag-icon flex justify-center w-full">
-                  <img src={fileUpload} />
-                </div>
-                <p className="ant-upload-text">
-                  <span className="text-[#EB5017] font-bold">
-                    Click Upload{" "}
-                  </span>
-                  or Drag and drop
-                </p>
-                <p className="ant-upload-hint text-[#98A2B3]">
-                  PNG, JPG or GIF (max. 800x400px)
-                </p>
-              </Dragger>
-            </div>
+            <Divider />
           </div>
-          <Divider />
-        </div>
 
-        <div className="flex w-full mt-4 mb-8">
-          <div className="ml-auto flex gap-2">
-            <Button>Cancel</Button>
-            <Button>Edit Product</Button>
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <Typography className="w-1/5 font-bold">
+                Tax Identification No.
+              </Typography>
+              <div className="w-full w-3/5">
+                <TextField className="w-full" fullWidth />
+              </div>
+            </div>
+            <Divider />
+          </div>
+
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <div className="w-2/5">
+                <Typography>Description</Typography>
+                <Typography>write a short introduction</Typography>
+              </div>
+              <div className="w-full w-3/5">
+                <TextField multiline rows={5} className="w-full" fullWidth />
+              </div>
+            </div>
+            <Divider />
+          </div>
+
+          <div className="flex w-full mt-4 mb-8">
+            <div className="ml-auto flex gap-2">
+              <Button>Cancel</Button>
+              <Button>Edit Product</Button>
+            </div>
           </div>
         </div>
-      </div>}
+      )}
+      {/* KYC Info */}
+      {valuez == "three" && (
+        <div className="p-8 bg-white">
+          <Typography className="font-bold">KYC</Typography>
+          <Typography className="text-[#A3AED0]">Complete your KYC</Typography>
+
+          <Divider />
+
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <div className="w-2/5">
+                <Typography className="font-bold">
+                  Address Verification
+                </Typography>
+                <Typography>Upload utility bill</Typography>
+              </div>
+              <div className="w-3/5 flex gap-5">
+                <Dragger
+                  className="h-60 w-full text-center flex flex-col justify-center items-center"
+                  {...props}
+                >
+                  <div className="ant-upload-drag-icon flex justify-center w-full">
+                    <img src={fileUpload} />
+                  </div>
+                  <p className="ant-upload-text">
+                    <span className="text-[#EB5017] font-bold">
+                      Click Upload{" "}
+                    </span>
+                    or Drag and drop
+                  </p>
+                  <p className="ant-upload-hint text-[#98A2B3]">
+                    PNG, JPG or GIF (max. 800x400px)
+                  </p>
+                </Dragger>
+              </div>
+            </div>
+            <Divider />
+          </div>
+
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <div className="w-2/5">
+                <Typography className="font-bold">CAC Verification</Typography>
+                <Typography>Upload CAC certificate</Typography>
+              </div>
+              <div className="w-3/5 flex gap-5">
+                <Dragger
+                  className="h-60 w-full text-center flex flex-col justify-center items-center"
+                  {...props}
+                >
+                  <div className="ant-upload-drag-icon flex justify-center w-full">
+                    <img src={fileUpload} />
+                  </div>
+                  <p className="ant-upload-text">
+                    <span className="text-[#EB5017] font-bold">
+                      Click Upload{" "}
+                    </span>
+                    or Drag and drop
+                  </p>
+                  <p className="ant-upload-hint text-[#98A2B3]">
+                    PNG, JPG or GIF (max. 800x400px)
+                  </p>
+                </Dragger>
+              </div>
+            </div>
+            <Divider />
+          </div>
+
+          <div className="flex w-full mt-4 mb-8">
+            <div className="ml-auto flex gap-2">
+              <Button>Cancel</Button>
+              <Button>Edit Product</Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Password Info */}
-{ valuez == 'four' &&     <div className="p-8 bg-white">
-        <Typography className="font-bold">Password</Typography>
-        <Typography className="text-[#A3AED0]">
-          Update your password here
-        </Typography>
+      {valuez == "four" && (
+        <div className="p-8 bg-white">
+          <Typography className="font-bold">Password</Typography>
+          <Typography className="text-[#A3AED0]">
+            Update your password here
+          </Typography>
 
-        <Divider />
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <Typography className="w-1/5 font-bold">
-              Current Password
-            </Typography>
-            <div className="w-full w-3/5">
-              <TextField className="w-full" fullWidth />
-            </div>
-          </div>
           <Divider />
-        </div>
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <Typography className="w-1/5 font-bold">New Password</Typography>
-            <div className="w-full w-3/5">
-              <TextField className="w-full" fullWidth />
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <Typography className="w-1/5 font-bold">
+                Current Password
+              </Typography>
+              <div className="w-full w-3/5">
+                <TextField className="w-full" fullWidth />
+              </div>
             </div>
+            <Divider />
           </div>
-          <Divider />
-        </div>
-        <div>
-          <div className="flex w-full justify-between p-5">
-            <Typography className="w-1/5 font-bold">
-              Confirm Password
-            </Typography>
-            <div className="w-full w-3/5">
-              <TextField className="w-full" fullWidth />
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <Typography className="w-1/5 font-bold">New Password</Typography>
+              <div className="w-full w-3/5">
+                <TextField className="w-full" fullWidth />
+              </div>
             </div>
+            <Divider />
           </div>
-          <Divider />
-        </div>
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <Typography className="w-1/5 font-bold">
+                Confirm Password
+              </Typography>
+              <div className="w-full w-3/5">
+                <TextField className="w-full" fullWidth />
+              </div>
+            </div>
+            <Divider />
+          </div>
 
-        <div className="flex w-full mt-4 mb-8">
-          <div className="ml-auto flex gap-2">
-            <Button>Cancel</Button>
-            <Button>Edit Product</Button>
+          <div className="flex w-full mt-4 mb-8">
+            <div className="ml-auto flex gap-2">
+              <Button>Cancel</Button>
+              <Button>Edit Product</Button>
+            </div>
           </div>
         </div>
-      </div>}
+      )}
     </div>
   );
 }

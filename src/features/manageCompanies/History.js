@@ -24,7 +24,7 @@ import {
   InputAdornment,
   Divider,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { RiArrowDownSFill } from "react-icons/ri";
@@ -39,8 +39,12 @@ import { AiFillDelete } from "react-icons/ai";
 import { TiEye } from "react-icons/ti";
 import fileUpload from "assets/dashboard/file upload states.svg";
 import { message, Upload } from "antd";
+import { RouteEnum } from "constants/RouteConstants";
+import { useSnackbar } from "notistack";
 
 function Trips() {
+  const { enqueueSnackbar } = useSnackbar();
+
   const [open, setOpen] = React.useState(false);
   const [filtername, setfiltername] = React.useState("Select Filter");
   const [showBikeDetails, setShowBikeDetails] = React.useState(false);
@@ -48,13 +52,14 @@ function Trips() {
   const [start_date, setStart_date] = React.useState();
   const [end_date, setEnd_date] = React.useState();
   const [riderId, setRiderId] = React.useState();
+  const [reloadProduct, setreloadProduct] = React.useState();
   const handleChange = (event) => {
     setRiderId(event.target.value);
   };
   const history = useNavigate();
 
   const redirect = () => {
-    history("/new-product")
+    history("/new-product");
   };
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -63,8 +68,9 @@ function Trips() {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClose = (link) => {
     setAnchorEl(null);
+    // Navigate(link);
   };
 
   const getUserQueryResult = UserApi?.useGetUserQuery({ userId });
@@ -78,153 +84,33 @@ function Trips() {
 
   const allHistory = getHistoryQueryResult?.data?.data;
 
-  const getAllBikesQueryResult = UserApi?.useGetAllBikesQuery();
+  const getProductsQueryResult = UserApi?.useGetProductsQuery({
+    productId: reloadProduct,
+  });
 
-  const allBikes = getAllBikesQueryResult?.data?.data;
+  const products = getProductsQueryResult?.data?.data?.products || [];
 
-  function createData(
-    paymentStatus,
-    roadMapUrl,
-    _id,
-    customerId,
-    riderId,
-    srcLoc,
-    destLoc,
-    paymentMode,
-    details,
-    tripRequestStatus,
-    tripRequestIssue,
-    pickUpAddress,
-    destAddress,
-    latitudeDelta,
-    longitudeDelta,
-    tripAmt,
-    tripDist,
-    bookingTime,
-    tripEndTime,
-    travelTime,
-    bikeType,
-    seatBooked,
-    tripStatus,
-    tripIssue,
-    companyId,
-    customerRatingByRider,
-    customerReviewByRider,
-    riderRatingByCustomer,
-    riderReviewByCustomer
-  ) {
-    return {
-      paymentStatus,
-      roadMapUrl,
-      _id,
-      customerId,
-      riderId,
-      srcLoc,
-      destLoc,
-      paymentMode,
-      details,
-      tripRequestStatus,
-      tripRequestIssue,
-      pickUpAddress,
-      destAddress,
-      latitudeDelta,
-      longitudeDelta,
-      tripAmt,
-      tripDist,
-      bookingTime,
-      tripEndTime,
-      travelTime,
-      bikeType,
-      seatBooked,
-      tripStatus,
-      tripIssue,
-      companyId,
-      customerRatingByRider,
-      customerReviewByRider,
-      riderRatingByCustomer,
-      riderReviewByCustomer,
-    };
-  }
+  const [deleteProductnMuation, deleteProductnMutationResult] =
+    UserApi.useDeleteProductMutation();
 
-  const row = allHistory?.map((e) =>
-    createData(
-      e.paymentStatus,
-      e.roadMapUrl,
-      e._id,
-      e.customerId,
-      e.riderId,
-      e.srcLoc,
-      e.destLoc,
-      e.paymentMode,
-      e.details,
-      e.tripRequestStatus,
-      e.tripRequestIssue,
-      e.pickUpAddress,
-      e.destAddress,
-      e.latitudeDelta,
-      e.longitudeDelta,
-      e.tripAmt,
-      e.tripDist,
-      e.bookingTime,
-      e.tripEndTime,
-      e.travelTime,
-      e.bikeType,
-      e.seatBooked,
-      e.tripStatus,
-      e.tripIssue,
-      e.companyId,
-      e.customerRatingByRider,
-      e.customerReviewByRider,
-      e.riderRatingByCustomer,
-      e.riderReviewByCustomer
-    )
-  );
-  const rows = [
-    createData(
-      "Olalekan Wasiu",
-      "Apapa, Lagos",
-      "Taiwo Daniel",
-      "WXHDGDJKGG",
-      "Delivered",
-      "N200,000",
-      "11 Sept. 9:00am",
-      "15 Sept. 1:00am",
-      "-"
-    ),
-    createData(
-      "Olalekan Wasiu",
-      "Apapa, Lagos",
-      "Taiwo Daniel",
-      "WXHDGDJKGG",
-      "Delivered",
-      "N200,000",
-      "11 Sept. 9:00am",
-      "15 Sept. 1:00am",
-      "-"
-    ),
-    createData(
-      "Yaba, Lagos",
-      "Apapa, Lagos",
-      "Taiwo Daniel",
-      "WXHDGDJKGG",
-      "Delivered",
-      "N200,000",
-      "11 Sept. 9:00am",
-      "15 Sept. 1:00am",
-      "-"
-    ),
-    createData(
-      "Sabo, Kaduna",
-      "Apapa, Lagos",
-      "Taiwo Daniel",
-      "WXHDGDJKGG",
-      "Delivered",
-      "N200,000",
-      "11 Sept. 9:00am",
-      "15 Sept. 1:00am",
-      "-"
-    ),
-  ];
+  const deleteProduct = async (id) => {
+    try {
+      const data = await deleteProductnMuation({
+        productId: id,
+      }).unwrap();
+      // TODO extra login
+      // redirect();
+      enqueueSnackbar("Product Deleted", {
+        variant: "success",
+      });
+      setreloadProduct(!reloadProduct);
+    } catch (error) {
+      enqueueSnackbar(error?.data?.message, "Failed to login", {
+        variant: "error",
+      });
+    }
+    // submitForm(values)
+  };
 
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const opens = Boolean(anchorEl2);
@@ -430,22 +316,30 @@ function Trips() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((row) => (
+              {(valuez == "three"
+                ? products.filter((e) => e.availability === "unavailable")
+                : valuez == "two"
+                ? products.filter((e) => e.availability === "available")
+                : products
+              )?.map((row) => (
                 <TableRow key={row.id}>
                   <TableCell>{row.id}</TableCell>
                   <TableCell className="flex gap-2">
-                    <img className="w-8 h-8" src={gigLogo} />
+                    <img
+                      className="w-8 h-8"
+                      src={row?.product_images[0]?.image}
+                    />
                     <div>
                       <o>{row.name}</o>
                       <p className="text-ssm">{row.name}</p>{" "}
                     </div>
                   </TableCell>
 
-                  <TableCell>{row.age}</TableCell>
-                  <TableCell>{row.city}</TableCell>
+                  <TableCell>{row.category?.name}</TableCell>
+                  <TableCell>{row.product_prices[0]?.max}</TableCell>
                   <TableCell>
                     <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center w-4/5">
-                      {row.country}
+                      {row.availability}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -468,10 +362,22 @@ function Trips() {
                       <MenuItem className="flex gap-2" onClick={handleClose}>
                         <AiFillEdit /> Edit
                       </MenuItem>
-                      <MenuItem className="flex gap-2" onClick={handleClose}>
+                      <MenuItem
+                        className="flex gap-2"
+                        onClick={() => {
+                          history(`${RouteEnum.SINGLE_PRODUCT_PAGE}/${row.id}`);
+                          handleClose();
+                        }}
+                      >
                         <TiEye /> View
                       </MenuItem>
-                      <MenuItem className="flex gap-2" onClick={handleClose}>
+                      <MenuItem
+                        className="flex gap-2"
+                        onClick={() => {
+                          handleClose();
+                          deleteProduct(row?.id);
+                        }}
+                      >
                         <AiFillDelete /> Delete
                       </MenuItem>
                     </Menu>
@@ -565,7 +471,6 @@ function Trips() {
       </Modal>
 
       {/* Personal Info */}
-    
     </div>
   );
 }

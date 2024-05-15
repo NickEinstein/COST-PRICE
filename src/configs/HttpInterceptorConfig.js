@@ -9,7 +9,7 @@ TodoorsHttp.interceptors.request.use((config) => {
   const { accessToken } = store.getState().global.authUser || {};
 
   if (accessToken) {
-    config.headers.Authorization = `${accessToken}`;
+    config.headers.Authorization = `Bearer ${accessToken}`;
     localStorage.setItem("token", accessToken);
   }
 

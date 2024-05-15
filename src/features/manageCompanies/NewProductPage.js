@@ -23,6 +23,7 @@ import {
   Tab,
   InputAdornment,
   Divider,
+  InputLabel,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -40,10 +41,13 @@ import { TiEye } from "react-icons/ti";
 import fileUpload from "assets/dashboard/file upload states.svg";
 import { message, Upload } from "antd";
 import { RouteEnum } from "constants/RouteConstants";
+import { post } from "services/fetchDocuments";
+import { useSnackbar } from "notistack";
 
 function Trips() {
   const [open, setOpen] = React.useState(false);
   const [filtername, setfiltername] = React.useState("Select Filter");
+  const [productDetails, setproductDetails] = useState({});
   const [showBikeDetails, setShowBikeDetails] = React.useState(false);
   const [userId, setUserId] = React.useState(null);
   const [start_date, setStart_date] = React.useState();
@@ -53,6 +57,7 @@ function Trips() {
     setRiderId(event.target.value);
   };
   const history = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   const redirect = () => {
     history(RouteEnum.PRODUCT_MANAGEMENT);
@@ -68,165 +73,35 @@ function Trips() {
     setAnchorEl(null);
   };
 
-  const getUserQueryResult = UserApi?.useGetUserQuery({ userId });
-  const user = getUserQueryResult?.data?.data;
+  // const getUserQueryResult = UserApi?.useGetUserQuery({ userId });
+  // const user = getUserQueryResult?.data?.data;
 
-  const getHistoryQueryResult = UserApi?.useGetHistoryQuery({
-    to: end_date,
-    from: start_date,
-    riderId: riderId,
+  // const getHistoryQueryResult = UserApi?.useGetHistoryQuery({
+  //   to: end_date,
+  //   from: start_date,
+  //   riderId: riderId,
+  // });
+  const getAllCategories = UserApi?.useGetCategoriesQuery();
+
+  const allCategories = getAllCategories?.data?.data?.categories || [];
+
+  console.log(getAllCategories);
+
+  const getSubCategoryQueryResult = UserApi?.useGetSubCategoriesQuery({
+    categoryId: productDetails.category_id,
   });
+  const subCategories =
+    getSubCategoryQueryResult?.data?.data?.sub_categories || [];
 
-  const allHistory = getHistoryQueryResult?.data?.data;
-
-  const getAllBikesQueryResult = UserApi?.useGetAllBikesQuery();
-
-  const allBikes = getAllBikesQueryResult?.data?.data;
-
-  function createData(
-    paymentStatus,
-    roadMapUrl,
-    _id,
-    customerId,
-    riderId,
-    srcLoc,
-    destLoc,
-    paymentMode,
-    details,
-    tripRequestStatus,
-    tripRequestIssue,
-    pickUpAddress,
-    destAddress,
-    latitudeDelta,
-    longitudeDelta,
-    tripAmt,
-    tripDist,
-    bookingTime,
-    tripEndTime,
-    travelTime,
-    bikeType,
-    seatBooked,
-    tripStatus,
-    tripIssue,
-    companyId,
-    customerRatingByRider,
-    customerReviewByRider,
-    riderRatingByCustomer,
-    riderReviewByCustomer
-  ) {
-    return {
-      paymentStatus,
-      roadMapUrl,
-      _id,
-      customerId,
-      riderId,
-      srcLoc,
-      destLoc,
-      paymentMode,
-      details,
-      tripRequestStatus,
-      tripRequestIssue,
-      pickUpAddress,
-      destAddress,
-      latitudeDelta,
-      longitudeDelta,
-      tripAmt,
-      tripDist,
-      bookingTime,
-      tripEndTime,
-      travelTime,
-      bikeType,
-      seatBooked,
-      tripStatus,
-      tripIssue,
-      companyId,
-      customerRatingByRider,
-      customerReviewByRider,
-      riderRatingByCustomer,
-      riderReviewByCustomer,
-    };
-  }
-
-  const row = allHistory?.map((e) =>
-    createData(
-      e.paymentStatus,
-      e.roadMapUrl,
-      e._id,
-      e.customerId,
-      e.riderId,
-      e.srcLoc,
-      e.destLoc,
-      e.paymentMode,
-      e.details,
-      e.tripRequestStatus,
-      e.tripRequestIssue,
-      e.pickUpAddress,
-      e.destAddress,
-      e.latitudeDelta,
-      e.longitudeDelta,
-      e.tripAmt,
-      e.tripDist,
-      e.bookingTime,
-      e.tripEndTime,
-      e.travelTime,
-      e.bikeType,
-      e.seatBooked,
-      e.tripStatus,
-      e.tripIssue,
-      e.companyId,
-      e.customerRatingByRider,
-      e.customerReviewByRider,
-      e.riderRatingByCustomer,
-      e.riderReviewByCustomer
-    )
-  );
-  const rows = [
-    createData(
-      "Olalekan Wasiu",
-      "Apapa, Lagos",
-      "Taiwo Daniel",
-      "WXHDGDJKGG",
-      "Delivered",
-      "N200,000",
-      "11 Sept. 9:00am",
-      "15 Sept. 1:00am",
-      "-"
-    ),
-    createData(
-      "Olalekan Wasiu",
-      "Apapa, Lagos",
-      "Taiwo Daniel",
-      "WXHDGDJKGG",
-      "Delivered",
-      "N200,000",
-      "11 Sept. 9:00am",
-      "15 Sept. 1:00am",
-      "-"
-    ),
-    createData(
-      "Yaba, Lagos",
-      "Apapa, Lagos",
-      "Taiwo Daniel",
-      "WXHDGDJKGG",
-      "Delivered",
-      "N200,000",
-      "11 Sept. 9:00am",
-      "15 Sept. 1:00am",
-      "-"
-    ),
-    createData(
-      "Sabo, Kaduna",
-      "Apapa, Lagos",
-      "Taiwo Daniel",
-      "WXHDGDJKGG",
-      "Delivered",
-      "N200,000",
-      "11 Sept. 9:00am",
-      "15 Sept. 1:00am",
-      "-"
-    ),
+  // const allBikes = getAllBikesQueryResult?.data?.data;
+  const availability = [
+    {
+      id: "available",
+      name: "Available",
+    },
+    { id: "Unavailable", name: "unavailable" },
+    { id: "Discontinued", name: "Discontinued" },
   ];
-
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const opens = Boolean(anchorEl2);
   const handleClick2 = (event) => {
@@ -274,6 +149,89 @@ function Trips() {
     p: 4,
   };
 
+  let variants = { color: "yellow", lights: "yes" };
+  let tags = ["overall", "rain coat"];
+  let specification = { weight: "5kg", volume: "2cl" };
+
+  const createProduct = async () => {
+    const formData = new FormData();
+    formData.append("category_id", productDetails.category_id);
+    formData.append("sub_category_id", productDetails.sub_category_id);
+    formData.append("name", productDetails.name);
+    formData.append("description", productDetails.description);
+    // formData.append("specification", null);
+    formData.append("availability", productDetails.availability);
+    // formData.append("images", productDetails.images);
+    formData.append("variants", JSON.stringify(variants));
+    formData.append("tags", JSON.stringify(tags));
+    formData.append("specification", JSON.stringify(specification));
+    formData.append("images[0]", productDetails.images);
+    formData.append(" prices[0][region]", 20);
+    formData.append(" prices[0][min]", 2);
+    formData.append(" prices[0][max]", 200);
+
+    const res = await post({
+      endpoint: "product",
+      body: formData,
+      // auth: false,
+    });
+
+    console.log(res);
+    if (res?.status == 200) {
+      enqueueSnackbar("Product added Successfully", {
+        variant: "success",
+      });
+
+      redirect(RouteEnum?.PRODUCT_MANAGEMENT)
+    } else {
+      enqueueSnackbar(res?.data?.message, {
+        variant: "danger",
+      });
+    }
+    //     category_id
+    // 55d716d0-75c6-43db-90cf-dc0fea804ad7
+
+    // sub_category_id
+    // 5d530402-af6a-4d0e-ab76-2cc49cc778dc
+
+    // name
+    // Hi-tech jacket
+
+    // description
+    // a wonderful text, a great text
+
+    // specification
+    // {"weight":"5kg","volume":"2cl"}
+
+    // availability
+    // available
+
+    // images[0]
+    // variants
+    // {"color":"yellow","lights":"yes"}
+
+    // tags
+    // ["overall","rain coat"]
+
+    // prices[0][region]
+    // south-west
+
+    // prices[0][min]
+    // 20
+
+    // prices[0][max]
+    // 20
+
+    // prices[1][region]
+    // south-east
+
+    // prices[1][min]
+    // 20
+
+    // prices[1][max]
+    // 20
+  };
+
   const [valuez, setValue] = React.useState("one");
 
   const handleChangeTab = (event, newValue) => {
@@ -289,17 +247,30 @@ function Trips() {
     onChange(info) {
       const { status } = info.file;
       if (status !== "uploading") {
-        console.log(info.file, info.fileList);
+        console.log(info.file);
+        setproductDetails({
+          ...productDetails,
+          images: info.file.originFileObj,
+        });
       }
       if (status === "done") {
         message.success(`${info.file.name} file uploaded successfully.`);
       } else if (status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
+        // message.error(`${info.file.name} file upload failed.`);
       }
     },
     onDrop(e) {
       console.log("Dropped files", e.dataTransfer.files);
     },
+  };
+
+  const onChange = (e) => {
+    console.log(e.target.name);
+    console.log(e.target.value);
+    setproductDetails({
+      ...productDetails,
+      [e.target.name]: e.target.value,
+    });
   };
   return (
     <div className="relative w-full ">
@@ -315,7 +286,7 @@ function Trips() {
           >
             Cancel
           </Button>
-          <Button>Save Product</Button>
+          <Button onClick={() => createProduct()}>Save Product</Button>
         </div>
       </div>
 
@@ -328,18 +299,31 @@ function Trips() {
               <div className="w-full justify-between ">
                 <div className="w-full ">
                   <Typography className="font-bold">Product Name</Typography>
-                  <TextField className="w-full" fullWidth />
+                  <TextField
+                    name="name"
+                    onChange={onChange}
+                    className="w-full"
+                    fullWidth
+                  />
                 </div>
               </div>
               <div className="w-full justify-between mt-3">
                 <div className="w-full ">
                   <Typography className="font-bold">Description</Typography>
-                  <TextField multiline rows={5} className="w-full" fullWidth />
+                  <TextField
+                    name="description"
+                    onChange={onChange}
+                    multiline
+                    rows={5}
+                    className="w-full"
+                    fullWidth
+                  />
                 </div>
               </div>
               <Divider />
             </div>
           </div>
+          {/* <input type="file" onChange={(e) => console.log(e.target.files[0])} /> */}
           <div className="mt-5 p-8 bg-white">
             <div className="w-full justify-between p-5">
               <div className="w-2/5">
@@ -376,13 +360,23 @@ function Trips() {
               <div className="w-full justify-between ">
                 <div className="w-full ">
                   <Typography className="font-bold">Location</Typography>
-                  <TextField className="w-full" fullWidth />
+                  <TextField
+                    name="location"
+                    onChange={onChange}
+                    className="w-full"
+                    fullWidth
+                  />
                 </div>
               </div>
               <div className="w-full justify-between mt-4">
                 <div className="w-full ">
                   <Typography className="font-bold">Company Price</Typography>
-                  <TextField className="w-full" fullWidth />
+                  <TextField
+                    name="companyPrice"
+                    onChange={onChange}
+                    className="w-full"
+                    fullWidth
+                  />
                 </div>
               </div>
               <div className="w-full flex gap-4 justify-between mt-4">
@@ -390,56 +384,174 @@ function Trips() {
                   <Typography className="font-bold">
                     Recommended Price (min)
                   </Typography>
-                  <TextField className="w-full" fullWidth />
+                  <TextField
+                    name="minPrice"
+                    onChange={onChange}
+                    className="w-full"
+                    fullWidth
+                  />
                 </div>
                 <div className="w-full ">
                   <Typography className="font-bold">
                     Recommended Price (max)
                   </Typography>
-                  <TextField className="w-full" fullWidth />
+                  <TextField
+                    name="maxPrice"
+                    onChange={onChange}
+                    className="w-full"
+                    fullWidth
+                  />
                 </div>
               </div>
               <Divider />
             </div>
+          </div>{" "}
+          <div className="w-full flex gap-4 justify-between mt-4">
+            <div className="w-full ">
+              <Typography className="font-bold">Specification</Typography>
+              <TextField
+                name="specification"
+                // onChange={onChange}
+                className="w-full"
+                fullWidth
+              />
+            </div>
+            <div className="w-full ">
+              <Typography className="font-bold">Description</Typography>
+              <TextField
+                name="maxPrice"
+                // onChange={onChange}
+                className="w-full"
+                fullWidth
+              />
+            </div>
           </div>
         </div>
+
         <div className="w-2/5">
           <div className="p-8 bg-white mt-5">
-            <Typography className="font-bold">Category</Typography>
+            {/* <Typography className="font-bold">Category</Typography> */}
             <div className="mt-8">
               <div className="w-full justify-between ">
-                <div className="w-full ">
+                {/* <div className="w-full ">
                   <Typography className="font-bold">
                     Product Category
                   </Typography>
-                  <TextField className="w-full" fullWidth />
+                  <TextField name="category" onChange={onChange} className="w-full" fullWidth />
+                </div> */}
+                <div className="w-full">
+                  <InputLabel className="text-left mb-2"> Category</InputLabel>
+                  <TextField
+                    onChange={(e) => {
+                      onChange(e);
+                      // getLgas(e.target.value);
+                    }}
+                    fullWidth
+                    id="outlined-select-currency"
+                    select
+                    // label="Select"
+                    name="category_id"
+                    // value={completeRegFormData?.state_id}
+
+                    // helperText="Please select your currency"
+                  >
+                    {allCategories?.map((option) => (
+                      <MenuItem key={option.id} value={option?.id}>
+                        {option?.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
                 </div>
               </div>
-              <div className="w-full justify-between  mt-4">
+
+              <div className="w-full mt-4">
+                <InputLabel className="text-left mb-2">Sub Category</InputLabel>
+                <TextField
+                  onChange={(e) => {
+                    onChange(e);
+                    // getLgas(e.target.value);
+                  }}
+                  fullWidth
+                  id="outlined-select-currency"
+                  select
+                  // label="Select"
+                  name="sub_category_id"
+                  // value={completeRegFormData?.state_id}
+
+                  // helperText="Please select your currency"
+                >
+                  {subCategories?.map((option) => (
+                    <MenuItem key={option.id} value={option?.id}>
+                      {option?.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </div>
+              {/* <div className="w-full justify-between  mt-4">
                 <div className="w-full ">
                   <Typography className="font-bold">Sub Category</Typography>
-                  <TextField className="w-full" fullWidth />
+                  <TextField
+                    name="subCategory"
+                    onChange={onChange}
+                    className="w-full"
+                    fullWidth
+                  />
                 </div>
-              </div>
-              <div className="w-full justify-between  mt-4">
+              </div> */}
+              <div className="w-full justify-between mt-4">
                 <div className="w-full ">
                   <Typography className="font-bold">Tags (Optional)</Typography>
-                  <TextField className="w-full" fullWidth />
+                  <TextField
+                    name="tags"
+                    onChange={onChange}
+                    className="w-full"
+                    fullWidth
+                  />
                 </div>
               </div>
             </div>
           </div>
           <div className="mt-5 p-8 bg-white">
             <div className="w-full justify-between p-5">
-              <div className="w-2/5">
+              {/* <div className="w-2/5">
                 <Typography className="font-bold">Availability</Typography>
-              </div>
+              </div> */}
               <div className="w-full justify-between  mt-4">
-                <div className="w-full ">
+                {/* <div className="w-full ">
                   <Typography className="font-bold">
                     Product Availability
                   </Typography>
-                  <TextField className="w-full" fullWidth />
+                  <TextField
+                    name="availability"
+                    onChange={onChange}
+                    className="w-full"
+                    fullWidth
+                  />
+                </div> */}
+                <div className="w-full mt-4">
+                  <InputLabel className="text-left mb-2">
+                    Availability
+                  </InputLabel>
+                  <TextField
+                    onChange={(e) => {
+                      onChange(e);
+                      // getLgas(e.target.value);
+                    }}
+                    fullWidth
+                    id="outlined-select-currency"
+                    select
+                    // label="Select"
+                    name="availability"
+                    // value={completeRegFormData?.state_id}
+
+                    // helperText="Please select your currency"
+                  >
+                    {availability?.map((option) => (
+                      <MenuItem key={option.id} value={option?.id}>
+                        {option?.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
                 </div>
               </div>
             </div>
@@ -451,13 +563,23 @@ function Trips() {
               <div className="w-full justify-between ">
                 <div className="w-full ">
                   <Typography className="font-bold">Variant</Typography>
-                  <TextField className="w-full" fullWidth />
+                  <TextField
+                    name="variants"
+                    onChange={onChange}
+                    className="w-full"
+                    fullWidth
+                  />
                 </div>
               </div>
               <div className="w-full justify-between mt-4">
                 <div className="w-full ">
                   <Typography className="font-bold">attribute</Typography>
-                  <TextField className="w-full" fullWidth />
+                  <TextField
+                    name="attribute"
+                    onChange={onChange}
+                    className="w-full"
+                    fullWidth
+                  />
                 </div>
               </div>
             </div>

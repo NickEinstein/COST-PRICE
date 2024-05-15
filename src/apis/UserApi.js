@@ -1,6 +1,6 @@
 import { todoorsApi } from "configs/StoreQueryConfig";
 
-const BASE_URL = "/api";
+const BASE_URL = "";
 
 export const UserApi = todoorsApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,7 +13,7 @@ export const UserApi = todoorsApi.injectEndpoints({
     }),
     login: builder.mutation({
       query: (config) => ({
-        url: `${BASE_URL}/auth/login`,
+        url: `${BASE_URL}/auth/signin`,
         method: "POST",
         ...config,
       }),
@@ -21,16 +21,30 @@ export const UserApi = todoorsApi.injectEndpoints({
     getCompanyStatistics: builder.query({
       query: (arg) => {
         return {
-          url: `${BASE_URL}/company/companyStatistics`,
+          url: `${BASE_URL}/product`,
           method: "GET",
         };
       },
     }),
-
-    addBike: builder.mutation({
+    addBasicProfile: builder.mutation({
       query: (config) => ({
-        url: `${BASE_URL}/company/addBike`,
+        url: `${BASE_URL}/user/update/basic-details`,
         method: "POST",
+        ...config,
+      }),
+    }),
+
+    addProduct: builder.mutation({
+      query: (config) => ({
+        url: `${BASE_URL}/product`,
+        method: "POST",
+        ...config,
+      }),
+    }),
+    deleteProduct: builder.mutation({
+      query: (config) => ({
+        url: `${BASE_URL}/product/delete/${config?.productId}`,
+        method: "DELETE",
         ...config,
       }),
     }),
@@ -47,8 +61,6 @@ export const UserApi = todoorsApi.injectEndpoints({
       },
     }),
 
-   
-
     deleteBike: builder.mutation({
       query: (config) => ({
         url: `${BASE_URL}/company/deleteBike`,
@@ -56,8 +68,6 @@ export const UserApi = todoorsApi.injectEndpoints({
         ...config,
       }),
     }),
-
- 
 
     getAllBikes: builder.query({
       query: (config) => {
@@ -69,6 +79,65 @@ export const UserApi = todoorsApi.injectEndpoints({
       },
     }),
 
+    getProducts: builder.query({
+      query: (config) => {
+        return {
+          url: `${BASE_URL}/product/user`,
+          method: "GET",
+          ...config,
+        };
+      },
+    }),
+    getProductsById: builder.query({
+      query: (arg) => {
+        const { productId } = arg;
+        return {
+          url: `${BASE_URL}/product/${productId}`,
+          method: "GET",
+          // params: { productId },
+        };
+      },
+    }),
+
+    getCategories: builder.query({
+      query: (config) => {
+        return {
+          url: `${BASE_URL}/category`,
+          method: "GET",
+          ...config,
+        };
+      },
+    }),
+
+    getSubCategories: builder.query({
+      query: (config) => {
+        return {
+          url: `${BASE_URL}/sub_category`,
+          method: "GET",
+          ...config,
+        };
+      },
+    }),
+
+    getSubCategoriesById: builder.query({
+      query: (arg) => {
+        const { categoryId } = arg;
+        return {
+          url: `${BASE_URL}/category/${categoryId}`,
+          method: "GET",
+          params: { categoryId },
+        };
+      },
+    }),
+    getMerchants: builder.query({
+      query: (config) => {
+        return {
+          url: `${BASE_URL}/user/merchants`,
+          method: "GET",
+          ...config,
+        };
+      },
+    }),
     getRiderTripStatistics: builder.query({
       query: (arg) => {
         return {

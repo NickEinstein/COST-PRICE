@@ -80,153 +80,9 @@ function Trips() {
 
   const allHistory = getHistoryQueryResult?.data?.data;
 
-  const getAllBikesQueryResult = UserApi?.useGetAllBikesQuery();
+  const getMerchantsQueryResult = UserApi?.useGetMerchantsQuery();
 
-  const allBikes = getAllBikesQueryResult?.data?.data;
-
-  function createData(
-    paymentStatus,
-    roadMapUrl,
-    _id,
-    customerId,
-    riderId,
-    srcLoc,
-    destLoc,
-    paymentMode,
-    details,
-    tripRequestStatus,
-    tripRequestIssue,
-    pickUpAddress,
-    destAddress,
-    latitudeDelta,
-    longitudeDelta,
-    tripAmt,
-    tripDist,
-    bookingTime,
-    tripEndTime,
-    travelTime,
-    bikeType,
-    seatBooked,
-    tripStatus,
-    tripIssue,
-    companyId,
-    customerRatingByRider,
-    customerReviewByRider,
-    riderRatingByCustomer,
-    riderReviewByCustomer
-  ) {
-    return {
-      paymentStatus,
-      roadMapUrl,
-      _id,
-      customerId,
-      riderId,
-      srcLoc,
-      destLoc,
-      paymentMode,
-      details,
-      tripRequestStatus,
-      tripRequestIssue,
-      pickUpAddress,
-      destAddress,
-      latitudeDelta,
-      longitudeDelta,
-      tripAmt,
-      tripDist,
-      bookingTime,
-      tripEndTime,
-      travelTime,
-      bikeType,
-      seatBooked,
-      tripStatus,
-      tripIssue,
-      companyId,
-      customerRatingByRider,
-      customerReviewByRider,
-      riderRatingByCustomer,
-      riderReviewByCustomer,
-    };
-  }
-
-  const row = allHistory?.map((e) =>
-    createData(
-      e.paymentStatus,
-      e.roadMapUrl,
-      e._id,
-      e.customerId,
-      e.riderId,
-      e.srcLoc,
-      e.destLoc,
-      e.paymentMode,
-      e.details,
-      e.tripRequestStatus,
-      e.tripRequestIssue,
-      e.pickUpAddress,
-      e.destAddress,
-      e.latitudeDelta,
-      e.longitudeDelta,
-      e.tripAmt,
-      e.tripDist,
-      e.bookingTime,
-      e.tripEndTime,
-      e.travelTime,
-      e.bikeType,
-      e.seatBooked,
-      e.tripStatus,
-      e.tripIssue,
-      e.companyId,
-      e.customerRatingByRider,
-      e.customerReviewByRider,
-      e.riderRatingByCustomer,
-      e.riderReviewByCustomer
-    )
-  );
-  const rows = [
-    createData(
-      "Olalekan Wasiu",
-      "Apapa, Lagos",
-      "Taiwo Daniel",
-      "WXHDGDJKGG",
-      "Delivered",
-      "N200,000",
-      "11 Sept. 9:00am",
-      "15 Sept. 1:00am",
-      "-"
-    ),
-    createData(
-      "Olalekan Wasiu",
-      "Apapa, Lagos",
-      "Taiwo Daniel",
-      "WXHDGDJKGG",
-      "Delivered",
-      "N200,000",
-      "11 Sept. 9:00am",
-      "15 Sept. 1:00am",
-      "-"
-    ),
-    createData(
-      "Yaba, Lagos",
-      "Apapa, Lagos",
-      "Taiwo Daniel",
-      "WXHDGDJKGG",
-      "Delivered",
-      "N200,000",
-      "11 Sept. 9:00am",
-      "15 Sept. 1:00am",
-      "-"
-    ),
-    createData(
-      "Sabo, Kaduna",
-      "Apapa, Lagos",
-      "Taiwo Daniel",
-      "WXHDGDJKGG",
-      "Delivered",
-      "N200,000",
-      "11 Sept. 9:00am",
-      "15 Sept. 1:00am",
-      "-"
-    ),
-  ];
+  const merchants = getMerchantsQueryResult?.data?.data?.user || [];
 
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const opens = Boolean(anchorEl2);
@@ -437,7 +293,7 @@ function Trips() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((row) => (
+              {merchants.map((row) => (
                 <TableRow key={row.id}>
                   <TableCell>{row.id}</TableCell>
                   <TableCell className="flex gap-2">
@@ -449,12 +305,12 @@ function Trips() {
                   </TableCell>
 
                   <TableCell>{row.merchName}</TableCell>
-                  <TableCell>{row.age}</TableCell>
-                  <TableCell>{row.merchPrice}</TableCell>
-                  <TableCell>{row.city}</TableCell>
+                  <TableCell>{row.age || "-"}</TableCell>
+                  <TableCell>{row.merchPrice || "-"}</TableCell>
+                  <TableCell>{row.industry_category||'-'}</TableCell>
                   <TableCell>
                     <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center w-4/5">
-                      {row.country}
+                      {row.country || "Pending"}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -571,8 +427,6 @@ function Trips() {
       </Modal>
 
       {/* Personal Info */}
-
-    
     </div>
   );
 }

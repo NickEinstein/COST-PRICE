@@ -50,6 +50,10 @@ const ROUTES = configureRoutes([
     element: lazy(() => import("features/manageCompanies/NewProductPage.js")),
   },
   {
+    path: RouteEnum.SINGLE_PRODUCT_PAGEs,
+    element: lazy(() => import("features/manageCompanies/SingleProduct.js")),
+  },
+  {
     path: RouteEnum.ANALYTICS,
     element: lazy(() => import("features/analytics/Analytics")),
   },
@@ -65,6 +69,14 @@ const ROUTES = configureRoutes([
     path: RouteEnum.MERCHANT_DETAILS,
     element: lazy(() => import("features/merchant/MerchantDetails")),
   },
+  {
+    path: RouteEnum.MERCHANT_PRODUCT,
+    element: lazy(() => import("features/manageCompanies/SingleProduct")),
+  },
+  // {
+  //   path: RouteEnum.PURCHASE_ORDER,
+  //   element: lazy(() => import("features/merchant/PurchaseHistoryOrder")),
+  // },
   {
     path: RouteEnum.MANAGE_RIDERS,
     element: lazy(() => import("features/wallet/Wallet")),
