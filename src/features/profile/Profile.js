@@ -29,18 +29,20 @@ import { useNavigate } from "react-router-dom";
 import { RiArrowDownSFill, RiArrowLeftSLine } from "react-icons/ri";
 import ToDoorSearch from "common/ToDoorSearch";
 import { AiFillWarning } from "react-icons/ai";
+import { useEffect } from "react";
 function ManageRiders() {
   const authUser = useAuthUser();
 
-  console.log(authUser);
-
   const [address, setAddress] = React.useState(authUser?.address);
   const [name, setName] = React.useState(authUser?.name);
-  const [city, setCity] = React.useState(authUser?.city);
+  const [businessFormData, setBusinessFormData] = React.useState();
   const [phoneNumber, setPhoneNumber] = React.useState(authUser?.phone_number);
   const [state, setState] = React.useState(authUser?.state);
   const [email, setEmail] = useState(authUser?.email);
-  const [companyName, setCompanyName] = useState(authUser?.fname);
+  const [companyAddress, setCompanyAddress] = useState(
+    authUser?.company_address
+  );
+  const [companyName, setCompanyName] = useState(authUser?.company_name);
   const [country, setCountry] = useState(authUser?.country);
   const [userId, setUserId] = React.useState(authUser?._id);
   const [uploadArray, setUploadArray] = useState([]);
@@ -53,12 +55,15 @@ function ManageRiders() {
   const [profilePic, setProfilePic] = useState();
   const [idPic, setidPic] = useState();
 
-  // const getUserQueryResult = UserApi?.useGetUserQuery({ userId, count });
-  // const user = getUserQueryResult?.data;
+  const getUserQueryResult = UserApi?.useGetUserProfileQuery({ userId, count });
+  const user = getUserQueryResult?.data;
 
   const [basicProfileMuation, basicProfileMutationResult] =
     UserApi.useAddBasicProfileMutation();
 
+    const [addBusinessProfileMuation, addBusinessProfileMutationResult] =
+    UserApi.useAddBusinessProfileMutation();
+    
   const updateBasicProfile = async (values) => {
     try {
       const data = await basicProfileMuation({
@@ -89,10 +94,14 @@ function ManageRiders() {
   //   UserApi.useUpdateUserUploadMutation();
 
   const { Dragger } = Upload;
-  const props = {
-    name: "file",
+  const props2 = {
+    name: "address_doc",
     multiple: true,
-    action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
+    action: "https://api.costprice.ng/api/user/upload/kyc-address",
+    //
+    headers: {
+      Authorization: `Bearer ${authUser?.accessToken} `, // Add your auth token here
+    },
     onChange(info) {
       const { status } = info.file;
       if (status !== "uploading") {
@@ -100,6 +109,52 @@ function ManageRiders() {
       }
       if (status === "done") {
         message.success(`${info.file.name} file uploaded successfully.`);
+      } else if (status === "error") {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    },
+    onDrop(e) {
+      console.log("Dropped files", e.dataTransfer.files);
+    },
+  };
+  const props3 = {
+    name: "cac_doc",
+    multiple: true,
+    action: "https://api.costprice.ng/api/user/upload/kyc-cac",
+    //
+    headers: {
+      Authorization: `Bearer ${authUser?.accessToken} `, // Add your auth token here
+    },
+    onChange(info) {
+      const { status } = info.file;
+      if (status !== "uploading") {
+        console.log(info.file, info.fileList);
+      }
+      if (status === "done") {
+        message.success(`${info.file.name} file uploaded successfully.`);
+      } else if (status === "error") {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    },
+    onDrop(e) {
+      console.log("Dropped files", e.dataTransfer.files);
+    },
+  };
+  const props = {
+    name: "pic",
+    multiple: true,
+    action: "https://api.costprice.ng/api/user/upload/profile-pic",
+    headers: {
+      Authorization: `Bearer ${authUser?.accessToken} `, // Add your auth token here
+    },
+    onChange(info) {
+      const { status } = info.file;
+      if (status !== "uploading") {
+        console.log(info.file, info.fileList);
+      }
+      if (status === "done") {
+        message.success(`${info.file.name} file uploaded successfully.`);
+        setcount((prev) => prev + 1);
       } else if (status === "error") {
         message.error(`${info.file.name} file upload failed.`);
       }
@@ -124,6 +179,52 @@ function ManageRiders() {
     setValue(newValue);
     console.log(newValue);
   };
+
+  const updateBusinessProfile = async () => {
+    let payload = {
+      company_name: businessFormData.company_name,
+      company_address: businessFormData.company_address,
+      company_state: businessFormData?.company_state,
+      company_lga: businessFormData?.company_lga,
+      company_registration: businessFormData.company_registration,
+      company_description: businessFormData?.company_description,
+      industry_category: businessFormData.industry_category,
+      tin: businessFormData?.tin,
+    };
+
+    try {
+      const data = await addBusinessProfileMuation({
+        data: {
+         ...payload
+        },
+      }).unwrap();
+      // TODO extra login
+      // redirect();
+      enqueueSnackbar("Updated Successfully", {
+        variant: "success",
+      });
+      setcount((prev) => prev + 1);
+
+      // setreloadProduct(!reloadProduct);
+    } catch (error) {
+      enqueueSnackbar(error?.data?.message, "Failed to login", {
+        variant: "error",
+      });
+    }
+  };
+
+  useEffect(() => {
+    setBusinessFormData({
+      company_name: authUser?.company_name,
+      company_address: authUser?.company_address,
+      company_state: authUser?.company_state,
+      company_lga: authUser?.company_lga,
+      company_registration: authUser?.company_registration,
+      company_description: authUser?.company_description,
+      industry_category: authUser?.industry_category,
+      tin: authUser?.tin
+    });
+  }, [authUser]);
 
   return (
     <div className="">
@@ -212,7 +313,7 @@ function ManageRiders() {
                 <Typography>This will be displayed on your profile</Typography>
               </div>
               <div className="w-3/5 flex gap-5">
-                <Avatar />
+                <Avatar src={authUser?.pic} />
                 <Dragger
                   className="h-60 w-full text-center flex flex-col justify-center items-center"
                   {...props}
@@ -222,7 +323,7 @@ function ManageRiders() {
                   </div>
                   <p className="ant-upload-text">
                     <span className="text-[#EB5017] font-bold">
-                      Click Upload{" "}
+                      Click Upload
                     </span>
                     or Drag and drop
                   </p>
@@ -241,9 +342,7 @@ function ManageRiders() {
           <div className="flex w-full mt-4 mb-8">
             <div className="ml-auto flex gap-2">
               <Button>Cancel</Button>
-              <Button onClick={updateBasicProfile}>
-                Update Details Details
-              </Button>
+              <Button onClick={updateBasicProfile}>Update Details</Button>
             </div>
           </div>
         </div>
@@ -263,7 +362,14 @@ function ManageRiders() {
               <Typography className="w-1/5 font-bold">Name</Typography>
               <div className="w-full w-3/5">
                 <Typography>Company Name</Typography>
-                <TextField className="w-full" fullWidth />
+                <TextField
+                  onChange={(e) =>
+                    setBusinessFormData({ ...businessFormData, company_name: e.target.value })
+                  }
+                  value={businessFormData?.company_name}
+                  className="w-full"
+                  fullWidth
+                />
               </div>
             </div>
             <Divider />
@@ -274,7 +380,50 @@ function ManageRiders() {
                 Company Address
               </Typography>
               <div className="w-full w-3/5">
-                <TextField className="w-full" fullWidth />
+                <TextField
+                  onChange={(e) =>
+                    setBusinessFormData({...businessFormData,  company_address: e.target.value })
+                  }
+                  value={businessFormData?.company_address}
+                  className="w-full"
+                  fullWidth
+                />
+              </div>
+            </div>
+            <Divider />
+          </div>
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <Typography className="w-1/5 font-bold">
+                Company State
+              </Typography>
+              <div className="w-full w-3/5">
+                <TextField
+                  onChange={(e) =>
+                    setBusinessFormData({...businessFormData,  company_state: e.target.value })
+                  }
+                  value={businessFormData?.company_state}
+                  className="w-full"
+                  fullWidth
+                />
+              </div>
+            </div>
+            <Divider />
+          </div>
+          <div>
+            <div className="flex w-full justify-between p-5">
+              <Typography className="w-1/5 font-bold">
+                Company LGA
+              </Typography>
+              <div className="w-full w-3/5">
+                <TextField
+                  onChange={(e) =>
+                    setBusinessFormData({...businessFormData,  company_lga: e.target.value })
+                  }
+                  value={businessFormData?.company_lga}
+                  className="w-full"
+                  fullWidth
+                />
               </div>
             </div>
             <Divider />
@@ -285,7 +434,14 @@ function ManageRiders() {
                 Industry Category
               </Typography>
               <div className="w-full w-3/5">
-                <TextField className="w-full" fullWidth />
+                <TextField
+                  onChange={(e) =>
+                    setBusinessFormData({ ...businessFormData, industry_category: e.target.value })
+                  }
+                  value={businessFormData?.industry_category}
+                  className="w-full"
+                  fullWidth
+                />
               </div>
             </div>
             <Divider />
@@ -294,10 +450,19 @@ function ManageRiders() {
           <div>
             <div className="flex w-full justify-between p-5">
               <Typography className="w-1/5 font-bold">
-                COmpany Reg No
+                Company Reg No
               </Typography>
               <div className="w-full w-3/5">
-                <TextField className="w-full" fullWidth />
+                <TextField
+                  onChange={(e) =>
+                    setBusinessFormData({...businessFormData, 
+                      company_registration: e.target.value,
+                    })
+                  }
+                  value={businessFormData?.company_registration}
+                  className="w-full"
+                  fullWidth
+                />
               </div>
             </div>
             <Divider />
@@ -309,7 +474,12 @@ function ManageRiders() {
                 Tax Identification No.
               </Typography>
               <div className="w-full w-3/5">
-                <TextField className="w-full" fullWidth />
+                <TextField
+                  onChange={(e) => setBusinessFormData({ ...businessFormData, tin: e.target.value })}
+                  value={businessFormData?.tin}
+                  className="w-full"
+                  fullWidth
+                />
               </div>
             </div>
             <Divider />
@@ -322,7 +492,16 @@ function ManageRiders() {
                 <Typography>write a short introduction</Typography>
               </div>
               <div className="w-full w-3/5">
-                <TextField multiline rows={5} className="w-full" fullWidth />
+                <TextField
+                  multiline
+                  rows={5}
+                  onChange={(e) =>
+                    setBusinessFormData({...businessFormData, company_description: e.target.value })
+                  }
+                  value={businessFormData?.company_description}
+                  className="w-full"
+                  fullWidth
+                />
               </div>
             </div>
             <Divider />
@@ -330,8 +509,8 @@ function ManageRiders() {
 
           <div className="flex w-full mt-4 mb-8">
             <div className="ml-auto flex gap-2">
-              <Button>Cancel</Button>
-              <Button>Edit Product</Button>
+              {/* <Button>Cancel</Button> */}
+              <Button onClick={updateBusinessProfile}>Update</Button>
             </div>
           </div>
         </div>
@@ -355,7 +534,7 @@ function ManageRiders() {
               <div className="w-3/5 flex gap-5">
                 <Dragger
                   className="h-60 w-full text-center flex flex-col justify-center items-center"
-                  {...props}
+                  {...props2}
                 >
                   <div className="ant-upload-drag-icon flex justify-center w-full">
                     <img src={fileUpload} />
@@ -384,7 +563,7 @@ function ManageRiders() {
               <div className="w-3/5 flex gap-5">
                 <Dragger
                   className="h-60 w-full text-center flex flex-col justify-center items-center"
-                  {...props}
+                  {...props3}
                 >
                   <div className="ant-upload-drag-icon flex justify-center w-full">
                     <img src={fileUpload} />
@@ -404,12 +583,12 @@ function ManageRiders() {
             <Divider />
           </div>
 
-          <div className="flex w-full mt-4 mb-8">
+          {/* <div className="flex w-full mt-4 mb-8">
             <div className="ml-auto flex gap-2">
               <Button>Cancel</Button>
               <Button>Edit Product</Button>
             </div>
-          </div>
+          </div> */}
         </div>
       )}
 

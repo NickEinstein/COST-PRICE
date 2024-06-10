@@ -18,10 +18,10 @@ export const UserApi = todoorsApi.injectEndpoints({
         ...config,
       }),
     }),
-    getCompanyStatistics: builder.query({
+    getUserProfile: builder.query({
       query: (arg) => {
         return {
-          url: `${BASE_URL}/product`,
+          url: `${BASE_URL}/user`,
           method: "GET",
         };
       },
@@ -29,6 +29,14 @@ export const UserApi = todoorsApi.injectEndpoints({
     addBasicProfile: builder.mutation({
       query: (config) => ({
         url: `${BASE_URL}/user/update/basic-details`,
+        method: "POST",
+        ...config,
+      }),
+    }),
+
+    addBusinessProfile: builder.mutation({
+      query: (config) => ({
+        url: `${BASE_URL}/user/update/business-details`,
         method: "POST",
         ...config,
       }),

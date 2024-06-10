@@ -29,7 +29,7 @@ function ToDoorSearch({ hide, pad }) {
 
   console.log(authUser);
 
-  const getUserQueryResult = UserApi?.useGetUserQuery({ userId });
+  const getUserQueryResult = UserApi?.useGetUserProfileQuery({ userId });
   const user = getUserQueryResult?.data;
 
   return (
@@ -72,11 +72,11 @@ function ToDoorSearch({ hide, pad }) {
                 <Avatar
                   className="mr-3 h-9 w-9"
                   alt="Travis Howard"
-                  src={user?.profileUrl}
+                  src={authUser?.pic}
                 />
                 <div className="cursor-pointer" onClick={redirect}>
                   <Typography className="text-black font-bold text-center mb-1">
-                    Dunfix Enterprises
+                    {authUser?.name}
                   </Typography>
                 </div>
               </div>

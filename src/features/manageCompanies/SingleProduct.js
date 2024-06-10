@@ -257,7 +257,8 @@ function SingleProduct() {
                   <div className="flex w-full py-2">
                     <Typography className="w-1/4">{price.region}</Typography>
                     <Typography className="w-1/4">
-                      ₦ {(price?.min + price?.max) / 2}
+                      {/* ₦ {(price?.min + price?.max) / 2} */}
+                      N/A
                     </Typography>
                     <Typography className="w-1/4">₦ {price?.min}</Typography>
                     <Typography className="w-1/4">₦ {price?.max}</Typography>

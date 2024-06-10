@@ -76,6 +76,28 @@ function ManageRiders() {
     name: "file",
     multiple: true,
     action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
+    // https://api.costprice.ng/api
+    onChange(info) {
+      const { status } = info.file;
+      if (status !== "uploading") {
+        console.log(info.file, info.fileList);
+      }
+      if (status === "done") {
+        message.success(`${info.file.name} file uploaded successfully.`);
+      } else if (status === "error") {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    },
+    onDrop(e) {
+      console.log("Dropped files", e.dataTransfer.files);
+    },
+  };
+
+  const props2 = {
+    name: "file",
+    multiple: true,
+    action: "https://api.costprice.ng/api/user/upload/kyc-cac",
+    // 
     onChange(info) {
       const { status } = info.file;
       if (status !== "uploading") {
@@ -252,10 +274,28 @@ function ManageRiders() {
           </div>
           <Divider />
         </div>
+        <div>
+          <div className="flex w-full justify-between p-5">
+            <Typography className="w-1/5 font-bold">State</Typography>
+            <div className="w-full w-3/5">
+              <TextField className="w-full" fullWidth />
+            </div>
+          </div>
+          <Divider />
+        </div>
+        <div>
+          <div className="flex w-full justify-between p-5">
+            <Typography className="w-1/5 font-bold">LGA</Typography>
+            <div className="w-full w-3/5">
+              <TextField className="w-full" fullWidth />
+            </div>
+          </div>
+          <Divider />
+        </div>
 
         <div>
           <div className="flex w-full justify-between p-5">
-            <Typography className="w-1/5 font-bold">COmpany Reg No</Typography>
+            <Typography className="w-1/5 font-bold">Company Reg No</Typography>
             <div className="w-full w-3/5">
               <TextField className="w-full" fullWidth />
             </div>
@@ -343,7 +383,7 @@ function ManageRiders() {
             <div className="w-3/5 flex gap-5">
             <Dragger
                 className="h-60 w-full text-center flex flex-col justify-center items-center"
-                {...props}
+                {...props2}
               >
                 <div className="ant-upload-drag-icon flex justify-center w-full">
                   <img src={fileUpload} />

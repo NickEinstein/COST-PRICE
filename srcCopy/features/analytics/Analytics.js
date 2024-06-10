@@ -65,11 +65,7 @@ function Dashboard(props) {
   const getMonthlyEarningsResult = UserApi?.useGetEarningsByMonthQuery();
   const getMonthlyTripsResult = UserApi?.useGetTripsByMonthQuery();
 
-  const getCompanyStatisticsQueryResult = UserApi.useGetCompanyStatisticsQuery(
-    {}
-  );
-  const companyStatistics = getCompanyStatisticsQueryResult?.data;
-
+ 
   const getAllBikesQueryResult = UserApi?.useGetAllBikesQuery();
 
   const allBikes = getAllBikesQueryResult?.data?.data;

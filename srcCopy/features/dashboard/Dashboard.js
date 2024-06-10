@@ -52,12 +52,10 @@ function Dashboard(props) {
     setEarnings(!earnings);
   };
 
-  const switsh = () => setshow(!show);
+
   const history = useNavigate();
 
-  const redirect = () => {
-    history("/complete-signUp");
-  };
+ 
 
   const authUser = useAuthUser();
 
@@ -67,25 +65,8 @@ function Dashboard(props) {
     return x?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
-  const getMonthlyEarningsResult = UserApi?.useGetEarningsByMonthQuery();
-  const getMonthlyTripsResult = UserApi?.useGetTripsByMonthQuery();
+ 
 
-  const getCompanyStatisticsQueryResult = UserApi.useGetCompanyStatisticsQuery(
-    {}
-  );
-  const companyStatistics = getCompanyStatisticsQueryResult?.data;
-
-  const getAllBikesQueryResult = UserApi?.useGetAllBikesQuery();
-
-  const allBikes = getAllBikesQueryResult?.data?.data;
-
-  useEffect(() => {
-    earnings
-      ? setCompanyMonthly(getMonthlyEarningsResult?.data?.data)
-      : setCompanyMonthly(getMonthlyTripsResult?.data?.data);
-
-    earnings ? setVal("Earnings") : setVal("Rides");
-  }, [earnings, getMonthlyEarningsResult, getMonthlyTripsResult]);
 
   const header = [
     "TRANSACTIONID",

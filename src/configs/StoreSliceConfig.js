@@ -34,7 +34,18 @@ const slice = createSlice({
           accessToken: payload.data?.accessToken,
           ...payload.data?.profile,
         };
-      }),
+      })
+
+      .addMatcher(
+        UserApi.endpoints.getUserProfile.matchFulfilled,
+        (state, payload) => {
+          console.log(payload.payload.data?.users);
+          state.authUser = {
+            ...state.authUser,
+            ...payload.payload.data?.users,
+          };
+        }
+      ),
 });
 
 export const { toggleLoadingModalAction } = slice.actions;

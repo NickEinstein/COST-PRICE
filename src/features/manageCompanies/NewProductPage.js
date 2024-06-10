@@ -43,11 +43,14 @@ import { message, Upload } from "antd";
 import { RouteEnum } from "constants/RouteConstants";
 import { post } from "services/fetchDocuments";
 import { useSnackbar } from "notistack";
+import { DeleteOutlineRounded } from "@mui/icons-material";
 
 function Trips() {
   const [open, setOpen] = React.useState(false);
   const [filtername, setfiltername] = React.useState("Select Filter");
-  const [productDetails, setproductDetails] = useState({});
+  const [productDetails, setproductDetails] = useState({ images: [] });
+  const [locationPricesData, setLocationPricesData] = useState([]);
+  const [specDescriptionData, setSpecDescriptionData] = useState([]);
   const [showBikeDetails, setShowBikeDetails] = React.useState(false);
   const [userId, setUserId] = React.useState(null);
   const [start_date, setStart_date] = React.useState();
@@ -102,6 +105,22 @@ function Trips() {
     { id: "Unavailable", name: "unavailable" },
     { id: "Discontinued", name: "Discontinued" },
   ];
+
+  const locations = [
+    {
+      id: "south-west",
+      name: "South-West",
+    },
+    { id: "south-east", name: "South-East" },
+    { id: "south-south", name: "South-South" },
+    {
+      id: "north-west",
+      name: "North-West",
+    },
+    { id: "north-east", name: "North-East" },
+    { id: "north-central", name: "North-central" },
+  ];
+
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const opens = Boolean(anchorEl2);
   const handleClick2 = (event) => {
@@ -154,6 +173,7 @@ function Trips() {
   let specification = { weight: "5kg", volume: "2cl" };
 
   const createProduct = async () => {
+    console.log(productDetails);
     const formData = new FormData();
     formData.append("category_id", productDetails.category_id);
     formData.append("sub_category_id", productDetails.sub_category_id);
@@ -165,10 +185,20 @@ function Trips() {
     formData.append("variants", JSON.stringify(variants));
     formData.append("tags", JSON.stringify(tags));
     formData.append("specification", JSON.stringify(specification));
-    formData.append("images[0]", productDetails.images);
-    formData.append(" prices[0][region]", 20);
-    formData.append(" prices[0][min]", 2);
-    formData.append(" prices[0][max]", 200);
+    // formData.append("images[0]", productDetails.images);
+
+    locationPricesData.forEach((price, index) => {
+      formData.append(
+        `prices[${index}][region]`,
+        price.location
+      );
+      formData.append(`prices[${index}][min]`, price.minPrice);
+      formData.append(`prices[${index}][max]`, price.maxPrice);
+    });
+
+    productDetails?.images.forEach((image, index) => {
+      formData.append(`images[${index}]`, image);
+    });
 
     const res = await post({
       endpoint: "product",
@@ -182,7 +212,7 @@ function Trips() {
         variant: "success",
       });
 
-      redirect(RouteEnum?.PRODUCT_MANAGEMENT)
+      redirect(RouteEnum?.PRODUCT_MANAGEMENT);
     } else {
       enqueueSnackbar(res?.data?.message, {
         variant: "danger",
@@ -250,7 +280,12 @@ function Trips() {
         console.log(info.file);
         setproductDetails({
           ...productDetails,
-          images: info.file.originFileObj,
+          images: [...productDetails?.images, info.file.originFileObj],
+        });
+
+        console.log({
+          ...productDetails,
+          images: [...productDetails?.images, info.file.originFileObj],
         });
       }
       if (status === "done") {
@@ -272,8 +307,16 @@ function Trips() {
       [e.target.name]: e.target.value,
     });
   };
+
+  const deletePrice = (id) => {
+    console.log(locationPricesData);
+    console.log(id);
+    setLocationPricesData([
+      ...locationPricesData?.filter((e) => e?.location !== id),
+    ]);
+  };
   return (
-    <div className="relative w-full ">
+    <div className="relative w-full pb-10">
       <div className="mb-8 mt-8 flex justify-between">
         <Typography variant="h5" className="font-bold">
           New Product
@@ -358,17 +401,41 @@ function Trips() {
             <Typography className="font-bold">Pricing Information</Typography>
             <div className="mt-8">
               <div className="w-full justify-between ">
-                <div className="w-full ">
+                {/* <div className="w-full ">
                   <Typography className="font-bold">Location</Typography>
                   <TextField
                     name="location"
                     onChange={onChange}
                     className="w-full"
                     fullWidth
-                  />
+                  /> 
+
+                </div>*/}
+                <div className="w-full mt-4">
+                  <InputLabel className="text-left mb-2">Location</InputLabel>
+                  <TextField
+                    onChange={(e) => {
+                      onChange(e);
+                      // getLgas(e.target.value);
+                    }}
+                    fullWidth
+                    id="outlined-select-currency"
+                    select
+                    // label="Select"
+                    name="location"
+                    // value={completeRegFormData?.state_id}
+
+                    // helperText="Please select your currency"
+                  >
+                    {locations?.map((option) => (
+                      <MenuItem key={option.id} value={option?.id}>
+                        {option?.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
                 </div>
               </div>
-              <div className="w-full justify-between mt-4">
+              {/* <div className="w-full justify-between mt-4">
                 <div className="w-full ">
                   <Typography className="font-bold">Company Price</Typography>
                   <TextField
@@ -378,7 +445,7 @@ function Trips() {
                     fullWidth
                   />
                 </div>
-              </div>
+              </div> */}
               <div className="w-full flex gap-4 justify-between mt-4">
                 <div className="w-full ">
                   <Typography className="font-bold">
@@ -403,14 +470,76 @@ function Trips() {
                   />
                 </div>
               </div>
-              <Divider />
+              <Button
+                className="mt-3"
+                onClick={() => {
+                  locationPricesData?.find(
+                    (e) => e?.location == productDetails?.location
+                  )
+                    ? message.error("This location has already been added")
+                    : setLocationPricesData([
+                        ...locationPricesData,
+                        {
+                          location: productDetails?.location,
+                          companyPrice: productDetails?.companyPrice,
+                          minPrice: productDetails?.minPrice,
+                          maxPrice: productDetails?.maxPrice,
+                        },
+                      ]);
+                }}
+              >
+                Add +
+              </Button>
+
+              {/* <Divider /> */}
+
+              {locationPricesData?.length > 0 && (
+                <div className="w-full mt-2">
+                  <div className="heading border-2 border-primary-main grid grid-cols-4 w-full gap-2 p-1">
+                    <Typography className="font-bold text-primary-main text-center">
+                      Location
+                    </Typography>
+                    <Typography className="font-bold text-primary-main text-center">
+                      Price
+                    </Typography>
+                    <Typography className="font-bold text-primary-main text-center">
+                      Price (Min)
+                    </Typography>
+                    <Typography className="font-bold text-primary-main text-center">
+                      Price (Max)
+                    </Typography>
+                  </div>
+
+                  {locationPricesData?.map((e) => (
+                    <div className="heading border border-primary-main grid grid-cols-4 p-2">
+                      <Typography className="text-center">
+                        {e?.location}
+                      </Typography>
+                      <Typography className="text-center">
+                        {e?.companyPrice}
+                      </Typography>
+                      <Typography className="text-center">
+                        {e?.minPrice}
+                      </Typography>
+                      <Typography className="text-center flex justify-between">
+                        <Typography className="ml-3">{e?.maxPrice}</Typography>
+                        <DeleteOutlineRounded
+                          onClick={() => deletePrice(e?.location)}
+                          className="hover:text-red-500 cursor-pointer"
+                        />
+                      </Typography>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>{" "}
-          <div className="w-full flex gap-4 justify-between mt-4">
+          <div className="w-full flex gap-4 justify-between bg-white p-4 mt-4">
             <div className="w-full ">
               <Typography className="font-bold">Specification</Typography>
               <TextField
                 name="specification"
+                placeholder='L x W x H'
                 // onChange={onChange}
                 className="w-full"
                 fullWidth
@@ -419,13 +548,28 @@ function Trips() {
             <div className="w-full ">
               <Typography className="font-bold">Description</Typography>
               <TextField
-                name="maxPrice"
+                name="specDesc"
+                placeholder='0g'
                 // onChange={onChange}
                 className="w-full"
                 fullWidth
               />
             </div>
           </div>
+          <Button
+            className="mt-3"
+            onClick={() => {
+              setSpecDescriptionData([
+                ...specDescriptionData,
+                {
+                  specification: specDescriptionData?.specification,
+                  specDesc: specDescriptionData?.specDesc,
+                },
+              ]);
+            }}
+          >
+            Add +
+          </Button>
         </div>
 
         <div className="w-2/5">
@@ -566,6 +710,7 @@ function Trips() {
                   <TextField
                     name="variants"
                     onChange={onChange}
+                    placeholder="colors,sizes etc"
                     className="w-full"
                     fullWidth
                   />
@@ -576,6 +721,7 @@ function Trips() {
                   <Typography className="font-bold">attribute</Typography>
                   <TextField
                     name="attribute"
+                    placeholder="Blue, 3xl etc"
                     onChange={onChange}
                     className="w-full"
                     fullWidth

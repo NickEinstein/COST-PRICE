@@ -338,9 +338,21 @@ function Trips() {
                   <TableCell>{row.category?.name}</TableCell>
                   <TableCell>{row.product_prices[0]?.max}</TableCell>
                   <TableCell>
-                    <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center w-4/5">
-                      {row.availability}
+                    <Typography
+                      className={`p-2 px-6  text-center  font-bold ${
+                        row?.availability == "available"
+                          ? "text-[#0F973D] bg-[#D1FFE3]"
+                          : row?.availability == "unavailable"
+                          ? "text-[#FFC600] bg-[#FFC60029]"
+                          : "text-[##F43F5E] bg-[#FFF1F2]"
+                        // #FFF1F2
+                      }`}
+                    >
+                      {row?.availability?.toUpperCase()}
                     </Typography>
+                    {/* <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center w-4/5">
+                      {row.availability}
+                    </Typography> */}
                   </TableCell>
                   <TableCell>
                     <IconButton onClick={handleClick}>

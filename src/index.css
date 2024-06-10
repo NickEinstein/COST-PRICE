@@ -145,6 +145,17 @@ height: 2.7em !important;
 
   
 }
+.css-cveggr-MuiListItemIcon-root {
+  min-width: 26px !important;
+  color: rgba(0, 0, 0, 0.54);
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
 /* .ant-select:not(.ant-select-customize-input) .ant-select-selector {
   position: relative;
   border-color: #000051 !important;
