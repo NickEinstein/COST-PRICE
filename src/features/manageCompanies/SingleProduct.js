@@ -43,13 +43,17 @@ import { TiEye } from "react-icons/ti";
 import fileUpload from "assets/dashboard/file upload states.svg";
 import { message, Upload } from "antd";
 import { BackspaceRounded } from "@mui/icons-material";
-import { BsBackspaceReverse, BsFillSkipBackwardCircleFill } from "react-icons/bs";
+import {
+  BsBackspaceReverse,
+  BsFillSkipBackwardCircleFill,
+} from "react-icons/bs";
 import { RouteEnum } from "constants/RouteConstants";
 
 function SingleProduct() {
   const [open, setOpen] = React.useState(false);
   const [filtername, setfiltername] = React.useState("Select Filter");
-  const [showBikeDetails, setShowBikeDetails] = React.useState(false);
+  const [currentSingleProduct, setcurrentSingleProduct] = React.useState(""
+  );
   const [userId, setUserId] = React.useState(null);
   const [start_date, setStart_date] = React.useState();
   const [end_date, setEnd_date] = React.useState();
@@ -88,6 +92,10 @@ function SingleProduct() {
     setAnchorEl2(null);
     setfiltername(name);
   };
+
+  useEffect(() => {
+    setcurrentSingleProduct(singleProduct?.product_images[0]?.image);
+  }, [singleProduct]);
 
   const data = [
     {
@@ -164,22 +172,25 @@ function SingleProduct() {
   return (
     <div className="relative w-full my-8">
       <Paper elevation={3} className="mt-12 p-12">
-
-        <BsFillSkipBackwardCircleFill size={32} className="mb-6 cursor-pointer text-primary-main" onClick={()=>{history(RouteEnum.PRODUCT_MANAGEMENT)}}/>
+        <BsFillSkipBackwardCircleFill
+          size={32}
+          className="mb-6 cursor-pointer text-primary-main"
+          onClick={() => {
+            history(RouteEnum.PRODUCT_MANAGEMENT);
+          }}
+        />
         <div className="flex w-full gap-4">
           <div className="flex flex-col gap-2 w-1/2">
             <Paper
               elevation={2}
               className="w-full h-full flex items-center justify-center "
             >
-              <img
-                className="w-full object-cover"
-                src={singleProduct?.product_images[0]?.image}
-              />
+              <img className="w-full object-cover" src={currentSingleProduct} />
             </Paper>
             <div className="flex flex gap-2 ">
               {singleProduct?.product_images?.map((e) => (
                 <Paper
+                  onClick={() => setcurrentSingleProduct(e?.image)}
                   elevation={1}
                   className="w-[25%] h-[120px] cursor-pointer"
                 >
@@ -190,20 +201,17 @@ function SingleProduct() {
           </div>
           <div className="flex flex-col gap-8 w-1/2">
             <div className="flex justify-between items-center mb-6">
-              <Typography
-                className="text-primary-main font-bold"
-                variant="h4"
-              >
+              <Typography className="text-primary-main font-bold" variant="h4">
                 {singleProduct?.name}
               </Typography>
               <Typography
                 className={`p-2 px-6  text-center  font-bold ${
-                  singleProduct?.availability== "available"
+                  singleProduct?.availability == "available"
                     ? "text-[#0F973D] bg-[#D1FFE3]"
                     : "text-[#FFC600] bg-[#FFC60029]"
                 }`}
               >
-                {singleProduct?.availability?.toUpperCase() }
+                {singleProduct?.availability?.toUpperCase()}
               </Typography>
             </div>
             <div className="w-auto">

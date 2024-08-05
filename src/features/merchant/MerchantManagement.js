@@ -82,7 +82,9 @@ function Trips() {
 
   const getMerchantsQueryResult = UserApi?.useGetMerchantsQuery();
 
-  const merchants = getMerchantsQueryResult?.data?.data?.user || [];
+  const merchants = getMerchantsQueryResult?.data?.data || [];
+
+  console.log(getMerchantsQueryResult?.data?.data)
 
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const opens = Boolean(anchorEl2);
@@ -294,23 +296,23 @@ function Trips() {
             </TableHead>
             <TableBody>
               {merchants.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>{row.id}</TableCell>
+                <TableRow key={row?.user?.id}>
+                  <TableCell>{row?.user?.id}</TableCell>
                   <TableCell className="flex gap-2">
                     <img className="w-8 h-8" src={gigLogo} />
                     <div>
-                      <o>{row.name}</o>
-                      <p className="text-ssm">{row.name}</p>{" "}
+                      <o>{row?.user?.name}</o>
+                      <p className="text-ssm">{row?.user?.name}</p>{" "}
                     </div>
                   </TableCell>
 
-                  <TableCell>{row.merchName}</TableCell>
-                  <TableCell>{row.age || "-"}</TableCell>
-                  <TableCell>{row.merchPrice || "-"}</TableCell>
-                  <TableCell>{row.industry_category||'-'}</TableCell>
+                  <TableCell>{row?.user?.merchName}</TableCell>
+                  <TableCell>{row?.user?.age || "-"}</TableCell>
+                  <TableCell>{row?.user?.merchPrice || "-"}</TableCell>
+                  <TableCell>{row?.user?.industry_category||'-'}</TableCell>
                   <TableCell>
                     <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center w-4/5">
-                      {row.country || "Pending"}
+                      {row?.user?.country || "Pending"}
                     </Typography>
                   </TableCell>
                   <TableCell>

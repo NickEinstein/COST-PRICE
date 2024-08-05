@@ -173,7 +173,60 @@ function Trips() {
   let specification = { weight: "5kg", volume: "2cl" };
 
   const createProduct = async () => {
-    console.log(productDetails);
+
+    console.log(locationPricesData?.length);
+    if (!productDetails?.category_id)
+      return enqueueSnackbar("Please add category", {
+        variant: "error",
+      });
+    if (!specification)
+      return enqueueSnackbar("Please add specification", {
+        variant: "error",
+      });
+    if (!productDetails?.sub_category_id)
+      return enqueueSnackbar("Please add subcategory", {
+        variant: "error",
+      });
+
+    if (!productDetails?.name)
+      return enqueueSnackbar("Please add product name", {
+        variant: "error",
+      });
+    if (!productDetails?.description)
+      return enqueueSnackbar("Please add product description", {
+        variant: "error",
+      });
+    if (!productDetails?.availability)
+      return enqueueSnackbar("Please add product availability", {
+        variant: "error",
+      });
+      if (!productDetails?.volume)
+        return enqueueSnackbar("Please add product volume", {
+          variant: "error",
+        });
+        if (!productDetails?.weight)
+          return enqueueSnackbar("Please add product weight", {
+            variant: "error",
+          });
+      if (productDetails?.images.length<1)
+        return enqueueSnackbar("Please make sure you have added atleast one image of the product", {
+          variant: "error",
+        });
+
+      if (locationPricesData?.length<6)
+        return enqueueSnackbar("Please add Prices for all 6 geopolitical zones", {
+          variant: "error",
+        });
+
+    if (!variants)
+      return enqueueSnackbar("Please add product variants", {
+        variant: "success",
+      });
+    if (!tags)
+      return enqueueSnackbar("Product added product tags", {
+        variant: "success",
+      });
+
     const formData = new FormData();
     formData.append("category_id", productDetails.category_id);
     formData.append("sub_category_id", productDetails.sub_category_id);
@@ -184,14 +237,11 @@ function Trips() {
     // formData.append("images", productDetails.images);
     formData.append("variants", JSON.stringify(variants));
     formData.append("tags", JSON.stringify(tags));
-    formData.append("specification", JSON.stringify(specification));
+    formData.append("specification", JSON.stringify({ weight: productDetails?.weight, volume: productDetails?.volume }));
     // formData.append("images[0]", productDetails.images);
 
     locationPricesData.forEach((price, index) => {
-      formData.append(
-        `prices[${index}][region]`,
-        price.location
-      );
+      formData.append(`prices[${index}][region]`, price.location);
       formData.append(`prices[${index}][min]`, price.minPrice);
       formData.append(`prices[${index}][max]`, price.maxPrice);
     });
@@ -435,7 +485,7 @@ function Trips() {
                   </TextField>
                 </div>
               </div>
-              {/* <div className="w-full justify-between mt-4">
+              <div className="w-full justify-between mt-4">
                 <div className="w-full ">
                   <Typography className="font-bold">Company Price</Typography>
                   <TextField
@@ -445,7 +495,7 @@ function Trips() {
                     fullWidth
                   />
                 </div>
-              </div> */}
+              </div>
               <div className="w-full flex gap-4 justify-between mt-4">
                 <div className="w-full ">
                   <Typography className="font-bold">
@@ -536,27 +586,27 @@ function Trips() {
           </div>{" "}
           <div className="w-full flex gap-4 justify-between bg-white p-4 mt-4">
             <div className="w-full ">
-              <Typography className="font-bold">Specification</Typography>
+              <Typography className="font-bold">Volume</Typography>
               <TextField
-                name="specification"
-                placeholder='L x W x H'
-                // onChange={onChange}
+                name="volume"
+                placeholder="L x W x H"
+                onChange={onChange}
                 className="w-full"
                 fullWidth
               />
             </div>
             <div className="w-full ">
-              <Typography className="font-bold">Description</Typography>
+              <Typography className="font-bold">Weight</Typography>
               <TextField
-                name="specDesc"
-                placeholder='0g'
-                // onChange={onChange}
+                name="weight"
+                placeholder="0g"
+                onChange={onChange}
                 className="w-full"
                 fullWidth
               />
             </div>
           </div>
-          <Button
+          {/* <Button
             className="mt-3"
             onClick={() => {
               setSpecDescriptionData([
@@ -569,7 +619,7 @@ function Trips() {
             }}
           >
             Add +
-          </Button>
+          </Button> */}
         </div>
 
         <div className="w-2/5">
