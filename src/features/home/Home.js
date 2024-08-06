@@ -208,9 +208,9 @@ const Home = () => {
 
   const [loginMuation, loginMutationResult] = UserApi.useLoginMutation();
   const { enqueueSnackbar } = useSnackbar();
-  const redirect = () => {
-    navigate(RouteEnum.DASHBOARD);
-  };
+  // const redirect = () => {
+  //   navigate(RouteEnum.DASHBOARD);
+  // };
 
   // const submitForm = (values) => {
   //     setLoading(true)
@@ -289,6 +289,7 @@ const Home = () => {
                 console.log(values, "often");
 
                 localStorage.setItem("il", true);
+                setLoading(true);
 
                 try {
                   const data = await loginMuation({
@@ -297,11 +298,21 @@ const Home = () => {
                       password: values.password,
                     },
                   }).unwrap();
+
+                  console.log(data);
+
+                  if (data?.data?.type !== "principal") {
+                    enqueueSnackbar("You are not authorised", {
+                      variant: "error",
+                    });
+                    setLoading(false)
+                  }
+
                   // TODO extra login
-                  redirect();
-                  enqueueSnackbar("Logged in successful", {
-                    variant: "success",
-                  });
+                  // redirect();
+                  // enqueueSnackbar("Logged in successful", {
+                  //   variant: "success",
+                  // });
                 } catch (error) {
                   enqueueSnackbar(error?.data?.message, "Failed to login", {
                     variant: "error",

@@ -3,6 +3,7 @@ import { logoutAction } from "./StoreActionConfig";
 import UserApi from "apis/UserApi";
 import SignupApi from "apis/SignupApi";
 
+
 export const globalInitialState = {
   themeMode: "light", // 'dark'| 'light' | 'media'
   isLoadingModal: false,
@@ -22,7 +23,12 @@ const slice = createSlice({
     builder
       .addCase(logoutAction, () => ({ ...globalInitialState }))
       .addMatcher(UserApi.endpoints.login.matchFulfilled, (state, payload) => {
-        // console.log(payload.payload.data);
+        console.log(payload.payload.data);
+        if (payload?.payload?.data?.type !== "principal") {
+          localStorage.setItem("il", false);
+          localStorage.clear();
+          return;
+        }
         state.authUser = {
           accessToken: payload?.payload?.token,
           ...payload.payload.data,
@@ -30,6 +36,7 @@ const slice = createSlice({
       })
       .addMatcher(UserApi.endpoints.signup.matchFulfilled, (state, payload) => {
         // console.log(payload.payload.token);
+       
         state.authUser = {
           accessToken: payload.data?.accessToken,
           ...payload.data?.profile,

@@ -298,7 +298,8 @@ const Home = () => {
                     },
                   }).unwrap();
                   // TODO extra login
-                  redirect();
+                  // redirect();
+                  console.log(data)
                   enqueueSnackbar("Logged in successful", {
                     variant: "success",
                   });

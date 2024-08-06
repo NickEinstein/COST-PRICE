@@ -35,7 +35,7 @@ function ToDoorSearch({ hide, pad }) {
   return (
     <div>
       <div className="flex justify-between items-center w-full">
-        <Typography className="font-bold">Welcome Back, Nick</Typography>
+        <Typography className="font-bold">Welcome Back</Typography>
         <TextField
           InputProps={{
             endAdornment: (
