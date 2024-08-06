@@ -35,7 +35,9 @@ function ToDoorSearch({ hide, pad }) {
   return (
     <div>
       <div className="flex justify-between items-center w-full">
-        <Typography className="font-bold">Welcome Back</Typography>
+        <Typography className="">Welcome Back, <span className="font-bold">
+        {authUser?.name}
+        </span></Typography>
         <TextField
           InputProps={{
             endAdornment: (
@@ -75,8 +77,11 @@ function ToDoorSearch({ hide, pad }) {
                   src={authUser?.pic}
                 />
                 <div className="cursor-pointer" onClick={redirect}>
-                  <Typography className="text-black font-bold text-center mb-1">
+                  <Typography className="text-black font-bold text-left mb">
                     {authUser?.name}
+                  </Typography>
+                  <Typography className="text-[#2E4457] text-left text-[11px] mb-1">
+                    {authUser?.type}
                   </Typography>
                 </div>
               </div>
