@@ -5,42 +5,14 @@ import gigLogo from "images/Ellipse 56.png";
 import producy from "assets/products/Main Image.svg";
 
 import {
-  Button,
-  TextField,
-  Select,
-  MenuItem,
-  Modal,
-  Box,
-  Avatar,
+  
   Typography,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  IconButton,
-  Menu,
-  Tabs,
-  Tab,
-  InputAdornment,
+ 
   Divider,
   Paper,
   Chip,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { RiArrowDownSFill } from "react-icons/ri";
-import { RiArrowLeftSLine } from "react-icons/ri";
-import { AiOutlineMore } from "react-icons/ai";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import ToDoorSearch from "common/ToDoorSearch";
-import { get } from "services/fetch";
-import { AiFillWarning } from "react-icons/ai";
-import { AiFillEdit } from "react-icons/ai";
-import { AiFillDelete } from "react-icons/ai";
-import { TiEye } from "react-icons/ti";
-import fileUpload from "assets/dashboard/file upload states.svg";
 import { message, Upload } from "antd";
 import { BackspaceRounded } from "@mui/icons-material";
 import {
@@ -68,15 +40,6 @@ function SingleProduct() {
     history("/new-product");
   };
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const getProductbyId = UserApi?.useGetProductsByIdQuery({ productId: id });
   const singleProduct = getProductbyId?.data?.data?.product;
@@ -85,13 +48,7 @@ function SingleProduct() {
 
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const opens = Boolean(anchorEl2);
-  const handleClick2 = (event) => {
-    setAnchorEl2(event.currentTarget);
-  };
-  const handleClose2 = (name) => {
-    setAnchorEl2(null);
-    setfiltername(name);
-  };
+ 
 
   useEffect(() => {
     setcurrentSingleProduct(singleProduct?.product_images[0]?.image);

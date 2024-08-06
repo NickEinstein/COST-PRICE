@@ -63,13 +63,17 @@ function Trips() {
   };
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [selectedRow, setSelectedRow] = useState(null);
 
-  const handleClick = (event) => {
+  const handleClick = (event, row) => {
     setAnchorEl(event.currentTarget);
+    setSelectedRow(row);
   };
 
   const handleClose = (link) => {
     setAnchorEl(null);
+    setSelectedRow(null);
+
     // Navigate(link);
   };
 
@@ -355,12 +359,13 @@ function Trips() {
                     </Typography> */}
                   </TableCell>
                   <TableCell>
-                    <IconButton onClick={handleClick}>
+                    <IconButton onClick={(event) => handleClick(event, row)}>
                       <AiOutlineMore />
                     </IconButton>
                     <Menu
                       anchorEl={anchorEl}
-                      open={Boolean(anchorEl)}
+                      open={Boolean(anchorEl) && selectedRow === row}
+                      // open={Boolean(anchorEl)}
                       onClose={handleClose}
                       anchorOrigin={{
                         vertical: "top",
