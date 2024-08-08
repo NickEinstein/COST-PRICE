@@ -55,18 +55,23 @@ function Trips() {
   };
   const history = useNavigate();
 
-  const redirect = () => {
-    history("/new-product");
+  const redirect = (push) => {
+    history(push);
   };
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [selectedRow, setSelectedRow] = useState(null);
 
-  const handleClick = (event) => {
+  const handleClick = (event, row) => {
     setAnchorEl(event.currentTarget);
+    setSelectedRow(row);
   };
 
-  const handleClose = () => {
+  const handleClose = (link) => {
     setAnchorEl(null);
+    setSelectedRow(null);
+
+    // Navigate(link);
   };
 
   const getUserQueryResult = UserApi?.useGetUserQuery({ userId });
@@ -84,7 +89,7 @@ function Trips() {
 
   const merchants = getMerchantsQueryResult?.data?.data || [];
 
-  console.log(getMerchantsQueryResult?.data?.data)
+  console.log(getMerchantsQueryResult?.data?.data);
 
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const opens = Boolean(anchorEl2);
@@ -284,12 +289,12 @@ function Trips() {
           <Table className="bg-white">
             <TableHead>
               <TableRow>
-                <TableCell className="text-[#8B909A]">PRODUCT NO</TableCell>
+                {/* <TableCell className="text-[#8B909A]">PRODUCT NO</TableCell> */}
                 <TableCell className="text-[#8B909A]">MERCHANT NAME</TableCell>
-                <TableCell className="text-[#8B909A]">PRODUCT NAME</TableCell>
-                <TableCell className="text-[#8B909A]">MERCHANT PRICE</TableCell>
-                <TableCell className="text-[#8B909A]">CATEGORY</TableCell>
-                <TableCell className="text-[#8B909A]">PRICE</TableCell>
+                <TableCell className="text-[#8B909A]">MERCHANT EMAIL</TableCell>
+                <TableCell className="text-[#8B909A]">MERCHANT PHONE</TableCell>
+                <TableCell className="text-[#8B909A]">TYPE</TableCell>
+                {/* <TableCell className="text-[#8B909A]">PRICE</TableCell> */}
                 <TableCell className="text-[#8B909A]">STATUS</TableCell>
                 <TableCell></TableCell>
               </TableRow>
@@ -297,7 +302,7 @@ function Trips() {
             <TableBody>
               {merchants.map((row) => (
                 <TableRow key={row?.user?.id}>
-                  <TableCell>{row?.user?.id}</TableCell>
+                  {/* <TableCell>{row?.user?.id}</TableCell> */}
                   <TableCell className="flex gap-2">
                     <img className="w-8 h-8" src={gigLogo} />
                     <div>
@@ -306,22 +311,23 @@ function Trips() {
                     </div>
                   </TableCell>
 
-                  <TableCell>{row?.user?.merchName}</TableCell>
-                  <TableCell>{row?.user?.age || "-"}</TableCell>
-                  <TableCell>{row?.user?.merchPrice || "-"}</TableCell>
-                  <TableCell>{row?.user?.industry_category||'-'}</TableCell>
+                  <TableCell>{row?.user?.email}</TableCell>
+                  <TableCell>{row?.user?.phone_number || "-"}</TableCell>
+                  {/* <TableCell>{row?.user?.merchPrice || "-"}</TableCell> */}
+                  <TableCell>{row?.user?.type?.toUpperCase() || "-"}</TableCell>
                   <TableCell>
                     <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center w-4/5">
                       {row?.user?.country || "Pending"}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <IconButton onClick={handleClick}>
+                    <IconButton onClick={(event) => handleClick(event, row)}>
                       <AiOutlineMore />
                     </IconButton>
                     <Menu
                       anchorEl={anchorEl}
-                      open={Boolean(anchorEl)}
+                      open={Boolean(anchorEl) && selectedRow === row}
+                      // open={Boolean(anchorEl)}
                       onClose={handleClose}
                       anchorOrigin={{
                         vertical: "top",
@@ -332,12 +338,18 @@ function Trips() {
                         horizontal: "right",
                       }}
                     >
-                      <MenuItem className="flex gap-2" onClick={handleClose}>
+                      <MenuItem
+                        className="flex gap-2"
+                        onClick={() => {
+                          redirect(`${RouteEnum.MERCHANT_DETAILs}/${row?.user?.id}`);
+                          handleClose();
+                        }}
+                      >
                         <TiEye /> View
                       </MenuItem>
-                      <MenuItem className="flex gap-2" onClick={handleClose}>
+                      {/* <MenuItem className="flex gap-2" onClick={handleClose}>
                         <AiFillDelete /> Delete
-                      </MenuItem>
+                      </MenuItem> */}
                     </Menu>
                   </TableCell>
                 </TableRow>

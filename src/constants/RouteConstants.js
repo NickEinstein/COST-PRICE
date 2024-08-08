@@ -11,7 +11,8 @@ export const RouteEnum = {
   SINGLE_PRODUCT_PAGE: "/single-product",
   SINGLE_PRODUCT_PAGEs: "/single-product/:id",
   MERCHANT_MANAGEMENT: "/merchant-management",
-  MERCHANT_DETAILS: "/merchant-details",
+  MERCHANT_DETAILs: "/merchant-details",
+  MERCHANT_DETAIL: "/merchant-details/:id",
   
   
   

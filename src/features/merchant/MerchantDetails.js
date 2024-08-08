@@ -5,8 +5,6 @@ import gigLogo from "images/Ellipse 56.png";
 
 import {
   Button,
-  TextField,
-  Select,
   MenuItem,
   Modal,
   Box,
@@ -19,41 +17,28 @@ import {
   TableBody,
   IconButton,
   Menu,
-  Tabs,
-  Tab,
-  InputAdornment,
   Divider,
   Paper,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { RiArrowDownSFill } from "react-icons/ri";
-import { RiArrowLeftSLine } from "react-icons/ri";
+import { useNavigate, useParams } from "react-router-dom";
 import { AiOutlineMore } from "react-icons/ai";
-import { LocalizationProvider } from "@mui/x-date-pickers";
 import ToDoorSearch from "common/ToDoorSearch";
-import { get } from "services/fetch";
-import { AiFillWarning } from "react-icons/ai";
 import { AiFillEdit } from "react-icons/ai";
 import { AiFillDelete } from "react-icons/ai";
 import { TiEye } from "react-icons/ti";
-import fileUpload from "assets/dashboard/file upload states.svg";
-import { message, Upload } from "antd";
 import { RouteEnum } from "constants/RouteConstants";
+import { useSnackbar } from "notistack";
 
 function MerchantDetails() {
+  const { enqueueSnackbar } = useSnackbar();
+
   const [open, setOpen] = React.useState(false);
   const [filtername, setfiltername] = React.useState("Select Filter");
+  const [selectedRow, setSelectedRow] = useState(null);
   const [showBikeDetails, setShowBikeDetails] = React.useState(false);
-  const [userId, setUserId] = React.useState(null);
-  const [start_date, setStart_date] = React.useState();
-  const [end_date, setEnd_date] = React.useState();
-  const [riderId, setRiderId] = React.useState();
-  const handleChange = (event) => {
-    setRiderId(event.target.value);
-  };
+
   const history = useNavigate();
+  const { id } = useParams();
 
   const redirect = () => {
     history(RouteEnum.MERCHANT_MANAGEMENT);
@@ -61,26 +46,22 @@ function MerchantDetails() {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const handleClick = (event) => {
+  const handleClick = (event, row) => {
+    setSelectedRow(row);
     setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
+    setSelectedRow(null);
     setAnchorEl(null);
   };
 
-  const getUserQueryResult = UserApi?.useGetUserQuery({ userId });
-  const user = getUserQueryResult?.data?.data;
-
-  const [anchorEl2, setAnchorEl2] = React.useState(null);
-  const opens = Boolean(anchorEl2);
-  const handleClick2 = (event) => {
-    setAnchorEl2(event.currentTarget);
-  };
-  const handleClose2 = (name) => {
-    setAnchorEl2(null);
-    setfiltername(name);
-  };
+  const getMerchenatListedProductQueryResult =
+    UserApi?.useGetMerchantProductsByMerchantIDQuery({
+      merchantId: id,
+    });
+  const merchanteListeedProduct =
+    getMerchenatListedProductQueryResult?.data?.data;
 
   const data = [
     {
@@ -126,32 +107,46 @@ function MerchantDetails() {
     p: 4,
   };
 
-  const [valuez, setValue] = React.useState("one");
-
-  const handleChangeTab = (event, newValue) => {
-    setValue(newValue);
-    console.log(newValue);
+  const [verifyProductMutation, verifyProductnMutationResult] =
+    UserApi.useVerifyProoductMutation();
+  const [unverifyProductMutation, unverifyProductnMutationResult] =
+    UserApi.useUnVerifyProoductMutation();
+  const verify = async (id) => {
+    try {
+      const data = await verifyProductMutation({
+        data: { listing_id: id },
+      }).unwrap();
+      // TODO extra login
+      // redirect();
+      enqueueSnackbar("Product Verified", {
+        variant: "success",
+      });
+      // setreloadProduct(!reloadProduct);
+    } catch (error) {
+      enqueueSnackbar(error?.data?.message, "Failed to login", {
+        variant: "error",
+      });
+    }
+    // submitForm(values)
   };
 
-  const { Dragger } = Upload;
-  const props = {
-    name: "file",
-    multiple: true,
-    action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
-    onChange(info) {
-      const { status } = info.file;
-      if (status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (status === "done") {
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-    onDrop(e) {
-      console.log("Dropped files", e.dataTransfer.files);
-    },
+  const unverify = async (id) => {
+    try {
+      const data = await unverifyProductMutation({
+        data: { listing_id: id },
+      }).unwrap();
+      // TODO extra login
+      // redirect();
+      enqueueSnackbar("Product Verified", {
+        variant: "success",
+      });
+      // setreloadProduct(!reloadProduct);
+    } catch (error) {
+      enqueueSnackbar(error?.data?.message, "Failed to login", {
+        variant: "error",
+      });
+    }
+    // submitForm(values)
   };
   return (
     <div className="relative w-full ">
@@ -196,21 +191,26 @@ function MerchantDetails() {
                 />
                 <div>
                   <p className="text-[#1E1E1E] text-sm mb-1">
-                    {user?.fname || "Oladimeji"} {user?.lname || "Bankole"}
+                    {merchanteListeedProduct?.fname || "Oladimeji"}{" "}
+                    {merchanteListeedProduct?.lname || "Bankole"}
                   </p>
                   <Button className="h-6 bg-primary-main">
-                    {user?.phoneNo}
+                    {merchanteListeedProduct?.phoneNo}
                   </Button>
                   <p className="text-center mt-1">
-                    {moment(user?.dob).format("ll") || "27th June 2022"}
+                    {moment(merchanteListeedProduct?.dob).format("ll") ||
+                      "27th June 2022"}
                   </p>
                 </div>
               </div>
 
               <div className="text-center">
-                <span> {user?.address || "Opposite Mofcon"}, </span>
-                <span> {user?.city || "Maryland,"} </span>
-                <p>{user?.state || "Lagos"}</p>
+                <span>
+                  {" "}
+                  {merchanteListeedProduct?.address || "Opposite Mofcon"},{" "}
+                </span>
+                <span> {merchanteListeedProduct?.city || "Maryland,"} </span>
+                <p>{merchanteListeedProduct?.state || "Lagos"}</p>
                 <p> {"Nigeria"},</p>
               </div>
             </div>
@@ -224,15 +224,25 @@ function MerchantDetails() {
               </Button>
               {showBikeDetails && (
                 <div>
-                  {/* <p>bikeDetails:{user?.bikeDetails} </p> */}
-                  <p>type:{user?.bikeDetails?.type} </p>
-                  <p>company:{user?.bikeDetails?.company} </p>
-                  <p>regNo:{user?.bikeDetails?.regNo} </p>
-                  <p>RC_ownerName:{user?.bikeDetails?.RC_ownerName} </p>
-                  <p>bikeNo:{user?.bikeDetails?.bikeNo}</p>
-                  <p>bikeModel:{user?.bikeDetails?.bikeModel} </p>
+                  {/* <p>bikeDetails:{merchanteListeedProduct?.bikeDetails} </p> */}
+                  <p>type:{merchanteListeedProduct?.bikeDetails?.type} </p>
                   <p>
-                    regDate:{moment(user?.bikeDetails?.regDate).format("ll")}{" "}
+                    company:{merchanteListeedProduct?.bikeDetails?.company}{" "}
+                  </p>
+                  <p>regNo:{merchanteListeedProduct?.bikeDetails?.regNo} </p>
+                  <p>
+                    RC_ownerName:
+                    {merchanteListeedProduct?.bikeDetails?.RC_ownerName}{" "}
+                  </p>
+                  <p>bikeNo:{merchanteListeedProduct?.bikeDetails?.bikeNo}</p>
+                  <p>
+                    bikeModel:{merchanteListeedProduct?.bikeDetails?.bikeModel}{" "}
+                  </p>
+                  <p>
+                    regDate:
+                    {moment(
+                      merchanteListeedProduct?.bikeDetails?.regDate
+                    ).format("ll")}{" "}
                   </p>
                 </div>
               )}
@@ -247,9 +257,15 @@ function MerchantDetails() {
               </Button>
               {showBikeDetails && (
                 <div>
-                  <p>accountNo: {user?.bankDetails?.accountNo},</p>
-                  <p>holderName: {user?.bankDetails?.holderName},</p>
-                  <p>bank: {user?.bankDetails?.bank}</p>
+                  <p>
+                    accountNo: {merchanteListeedProduct?.bankDetails?.accountNo}
+                    ,
+                  </p>
+                  <p>
+                    holderName:{" "}
+                    {merchanteListeedProduct?.bankDetails?.holderName},
+                  </p>
+                  <p>bank: {merchanteListeedProduct?.bankDetails?.bank}</p>
                 </div>
               )}
             </div>
@@ -265,9 +281,12 @@ function MerchantDetails() {
           <div className="w-full ">
             <div className="w-full ">
               <div className="flex items-center gap-5 mb-3">
-                <Typography variant="h5">Iya Sodiq</Typography>
+                <Typography variant="h5">
+                  {merchanteListeedProduct?.merchant_details?.name}
+                </Typography>
                 <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center">
-                  Pending
+                  {merchanteListeedProduct?.merchant_details?.status ||
+                    "pending"}
                 </Typography>
               </div>
               <div className="w-full flex gap-3 items-center my-3">
@@ -288,13 +307,13 @@ function MerchantDetails() {
                 <div className="flex justify-between mt-5">
                   <Typography className="font-bold">Email:</Typography>
                   <Typography className="text-[#8A9099]">
-                    abc@yahoo.com
+                    {merchanteListeedProduct?.merchant_details?.email}
                   </Typography>
                 </div>
                 <div className="flex justify-between mt-5">
                   <Typography className="font-bold">Phone</Typography>
                   <Typography className="text-[#8A9099]">
-                    080 (993) 88374
+                    {merchanteListeedProduct?.merchant_details?.phone_number}
                   </Typography>
                 </div>
               </div>
@@ -303,13 +322,14 @@ function MerchantDetails() {
                 <div className="flex justify-between mt-5">
                   <Typography className="font-bold">Merchant Type:</Typography>
                   <Typography className="text-[#8A9099]">
-                    Distributor
+                    {merchanteListeedProduct?.merchant_details?.type}
                   </Typography>
                 </div>
                 <div className="flex justify-between mt-5">
                   <Typography className="font-bold">Location</Typography>
                   <Typography className="text-[#8A9099]">
-                    Socch, Russia
+                    {merchanteListeedProduct?.merchant_details?.state}
+                    {merchanteListeedProduct?.merchant_details?.lga},
                   </Typography>
                 </div>
               </div>
@@ -327,68 +347,76 @@ function MerchantDetails() {
               <TableCell className="text-[#8B909A]">PRODUCT NO</TableCell>
               <TableCell className="text-[#8B909A]">MERCHANT NAME</TableCell>
               <TableCell className="text-[#8B909A]">PRODUCT NAME</TableCell>
-              <TableCell className="text-[#8B909A]">MERCHANT PRICE</TableCell>
               <TableCell className="text-[#8B909A]">CATEGORY</TableCell>
               <TableCell className="text-[#8B909A]">PRICE</TableCell>
+              <TableCell className="text-[#8B909A]">MERCHANT PRICE</TableCell>
+
               <TableCell className="text-[#8B909A]">STATUS</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell>{row.id}</TableCell>
-                <TableCell className="flex gap-2">
-                  <img className="w-8 h-8" src={gigLogo} />
-                  <div>
-                    <o>{row.name}</o>
-                    <p className="text-ssm">{row.name}</p>{" "}
-                  </div>
-                </TableCell>
+            {merchanteListeedProduct &&
+              merchanteListeedProduct["listed-products"]?.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell>{row.id}</TableCell>
+                  <TableCell className="flex gap-2">
+                    <img className="w-8 h-8" src={gigLogo} />
+                    <div>
+                      <o>{merchanteListeedProduct?.merchant_details?.name}</o>
+                      <p className="text-ssm">{row?.name}</p>{" "}
+                    </div>
+                  </TableCell>
 
-                <TableCell>{row.merchName}</TableCell>
-                <TableCell>{row.age}</TableCell>
-                <TableCell>{row.merchPrice}</TableCell>
-                <TableCell>{row.city}</TableCell>
-                <TableCell>
-                  <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center w-4/5">
-                    {row.country}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <IconButton onClick={handleClick}>
-                    <AiOutlineMore />
-                  </IconButton>
-                  <Menu
-                    anchorEl={anchorEl}
-                    open={Boolean(anchorEl)}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                  >
-                    <MenuItem
-                      className="flex gap-2 text-[#0F973D]"
-                      onClick={handleClose}
+                  <TableCell>{row?.product?.name}</TableCell>
+                  <TableCell>{row.product.category_id}</TableCell>
+                  <TableCell>{row?.price}</TableCell>
+                  <TableCell>{row.city}</TableCell>
+                  <TableCell>
+                    <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center w-4/5">
+                      {row.country}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <IconButton onClick={(event) => handleClick(event, row)}>
+                      <AiOutlineMore />
+                    </IconButton>
+                    <Menu
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl) && selectedRow === row}
+                      onClose={handleClose}
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
                     >
-                      <AiFillEdit /> Verify Product
-                    </MenuItem>
+                      <MenuItem
+                        className="flex gap-2 text-[#0F973D]"
+                        onClick={() => {
+                          handleClose();
+                          verify(row?.id);
+                        }}
+                      >
+                        <AiFillEdit /> Verify Product
+                      </MenuItem>
 
-                    <MenuItem
-                      className="flex gap-2 text-[#E61919]"
-                      onClick={handleClose}
-                    >
-                      <AiFillDelete /> Decline Verification
-                    </MenuItem>
-                  </Menu>
-                </TableCell>
-              </TableRow>
-            ))}
+                      <MenuItem
+                        className="flex gap-2 text-[#E61919]"
+                        onClick={() => {
+                          unverify(row?.id);
+                          handleClose();
+                        }}
+                      >
+                        <AiFillDelete /> Decline Verification
+                      </MenuItem>
+                    </Menu>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </Paper>

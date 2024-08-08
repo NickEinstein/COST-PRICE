@@ -18,6 +18,23 @@ export const UserApi = todoorsApi.injectEndpoints({
         ...config,
       }),
     }),
+
+    verifyProoduct: builder.mutation({
+      query: (config) => ({
+        url: `${BASE_URL}/product_listing/verify-product-listing/${config?.data?.listing_id}`,
+
+        method: "POST",
+        ...config,
+      }),
+    }),
+    unVerifyProoduct: builder.mutation({
+      query: (config) => ({
+        url: `${BASE_URL}/product_listing/verify-product-listing/${config?.data?.listing_id}`,
+
+        method: "POST",
+        // ...config,
+      }),
+    }),
     getUserProfile: builder.query({
       query: (arg) => {
         return {
@@ -26,6 +43,7 @@ export const UserApi = todoorsApi.injectEndpoints({
         };
       },
     }),
+
     addBasicProfile: builder.mutation({
       query: (config) => ({
         url: `${BASE_URL}/user/update/basic-details`,
@@ -146,10 +164,10 @@ export const UserApi = todoorsApi.injectEndpoints({
         };
       },
     }),
-    getRiderTripStatistics: builder.query({
-      query: (arg) => {
+    getMerchantProductsByMerchantID: builder.query({
+      query: (config) => {
         return {
-          url: `${BASE_URL}/company/companyTripStatics`,
+          url: `${BASE_URL}/product_listing/my-products-listed-by-merchant/${config?.merchantId}`,
           method: "GET",
         };
       },
