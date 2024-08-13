@@ -7,8 +7,6 @@ import {
   Button,
   MenuItem,
   Modal,
-  Box,
-  Avatar,
   Typography,
   Table,
   TableHead,
@@ -62,37 +60,6 @@ function MerchantDetails() {
     });
   const merchanteListeedProduct =
     getMerchenatListedProductQueryResult?.data?.data;
-
-  const data = [
-    {
-      id: "#0007366388",
-      merchName: "Adeyemi Adekanmi",
-      name: "Relaxer",
-      merchPrice: "N 3009",
-      age: "Hair Care",
-      city: "N 12344",
-      country: "PENDING",
-    },
-    {
-      id: "#0007366388",
-      merchName: "Adeyemi Adekanmi",
-      name: "Relaxer",
-      merchPrice: "N 3009",
-      age: "Hair Care",
-      city: "N 12344",
-      city: "N 12344",
-      country: "PENDING",
-    },
-    {
-      id: "#0007366388",
-      merchName: "Adeyemi Adekanmi",
-      name: "Relaxer",
-      merchPrice: "N 3009",
-      age: "Hair Care",
-      city: "N 12344",
-      country: "PENDING",
-    },
-  ];
 
   const style = {
     position: "absolute",
@@ -173,7 +140,7 @@ function MerchantDetails() {
         </div>
       </div>
 
-      <Modal
+      {/* <Modal
         open={open}
         onClose={() => setOpen(!open)}
         aria-labelledby="modal-modal-title"
@@ -224,7 +191,6 @@ function MerchantDetails() {
               </Button>
               {showBikeDetails && (
                 <div>
-                  {/* <p>bikeDetails:{merchanteListeedProduct?.bikeDetails} </p> */}
                   <p>type:{merchanteListeedProduct?.bikeDetails?.type} </p>
                   <p>
                     company:{merchanteListeedProduct?.bikeDetails?.company}{" "}
@@ -271,32 +237,42 @@ function MerchantDetails() {
             </div>
           </Box>
         </div>
-      </Modal>
+      </Modal> */}
 
       {/* Personal Info */}
 
       <Paper className="p-[5%] mt-4">
         <div className="flex items-start gap-4 w-full ">
-          <img className="w-[90px]" src={gigLogo} />
+          <img
+            className="w-[90px]"
+            src={merchanteListeedProduct?.merchant_details?.pic}
+          />
           <div className="w-full ">
             <div className="w-full ">
               <div className="flex items-center gap-5 mb-3">
                 <Typography variant="h5">
                   {merchanteListeedProduct?.merchant_details?.name}
                 </Typography>
-                <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center">
-                  {merchanteListeedProduct?.merchant_details?.status ||
-                    "pending"}
-                </Typography>
+                {merchanteListeedProduct?.totalListed > 0 &&
+                merchanteListeedProduct?.totalListed ==
+                  merchanteListeedProduct?.totalListed ? (
+                  <Typography className="p-1 bg-green-400/20 text-[#0F973D] text-center text-bold">
+                    VERIFIED
+                  </Typography>
+                ) : (
+                  <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center">
+                    PENDING
+                  </Typography>
+                )}
               </div>
               <div className="w-full flex gap-3 items-center my-3">
                 <Typography className="text-[#0F973D] min-w-[150px] ">
-                  0 verified Products
+                  {merchanteListeedProduct?.verifiedListed} Verified Products
                 </Typography>
                 <div className="flex items-center w-full">
                   <div className="w-2 h-2 bg-red-600 rounded-full"></div>
-                  <Typography className="p-1">
-                    9 total products listed
+                  <Typography className="p-1 font-bold text-primary-main">
+                    {merchanteListeedProduct?.totalListed} Total listed Products
                   </Typography>
                 </div>
               </div>
@@ -361,7 +337,7 @@ function MerchantDetails() {
                 <TableRow key={row.id}>
                   <TableCell>{row.id}</TableCell>
                   <TableCell className="flex gap-2">
-                    <img className="w-8 h-8" src={gigLogo} />
+                    <img className="w-8 h-8" src={merchanteListeedProduct?.merchant_details?.pic} />
                     <div>
                       <o>{merchanteListeedProduct?.merchant_details?.name}</o>
                       <p className="text-ssm">{row?.name}</p>{" "}
@@ -369,18 +345,31 @@ function MerchantDetails() {
                   </TableCell>
 
                   <TableCell>{row?.product?.name}</TableCell>
-                  <TableCell>{row.product.category_id}</TableCell>
+                  <TableCell>{row.product.category?.name}</TableCell>
                   <TableCell>{row?.price}</TableCell>
-                  <TableCell>{row.city}</TableCell>
+                  <TableCell>{row?.price}</TableCell>
+                  <TableCell>
+                    <Typography
+                      className={
+                        row?.verified == "1"
+                          ? "p-1  bg-green-400/30 text-[#0F973D] text-center font-bold"
+                          : "p-1 bg-[#FFC60029] text-[#FFC600] text-center font-bold"
+                      }
+                    >
+                      {row?.verified == "1" ? "VERIFIED" : "PENDING"}
+                    </Typography>
+                  </TableCell>
                   <TableCell>
                     <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center w-4/5">
                       {row.country}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <IconButton onClick={(event) => handleClick(event, row)}>
-                      <AiOutlineMore />
-                    </IconButton>
+                    {row?.verified !== "1" && (
+                      <IconButton onClick={(event) => handleClick(event, row)}>
+                        <AiOutlineMore />
+                      </IconButton>
+                    )}
                     <Menu
                       anchorEl={anchorEl}
                       open={Boolean(anchorEl) && selectedRow === row}

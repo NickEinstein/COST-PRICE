@@ -45,7 +45,7 @@ import { post } from "services/fetchDocuments";
 import { useSnackbar } from "notistack";
 import { DeleteOutlineRounded } from "@mui/icons-material";
 
-function Trips() {
+function NewProductsPage() {
   const [open, setOpen] = React.useState(false);
   const [filtername, setfiltername] = React.useState("Select Filter");
   const [productDetails, setproductDetails] = useState({ images: [] });
@@ -94,9 +94,8 @@ function Trips() {
     categoryId: productDetails.category_id,
   });
   const subCategories =
-    getSubCategoryQueryResult?.data?.data?.sub_categories || [];
+    getSubCategoryQueryResult?.data?.data?.sub_category || [];
 
-  // const allBikes = getAllBikesQueryResult?.data?.data;
   const availability = [
     {
       id: "available",
@@ -786,4 +785,4 @@ function Trips() {
   );
 }
 
-export default Trips;
+export default NewProductsPage;

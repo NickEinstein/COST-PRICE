@@ -25,7 +25,7 @@ import {
   Divider,
   InputLabel,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { RiArrowDownSFill } from "react-icons/ri";
@@ -42,43 +42,46 @@ import fileUpload from "assets/dashboard/file upload states.svg";
 import { message, Upload } from "antd";
 import { RouteEnum } from "constants/RouteConstants";
 import { post } from "services/fetchDocuments";
+import { useSnackbar } from "notistack";
+import { DeleteOutlineRounded } from "@mui/icons-material";
+import PictureWall from "./PictureWall";
 
-function Trips() {
+function EditProducts() {
+  const { id } = useParams();
+
   const [open, setOpen] = React.useState(false);
   const [filtername, setfiltername] = React.useState("Select Filter");
-  const [productDetails, setproductDetails] = useState({});
-  const [showBikeDetails, setShowBikeDetails] = React.useState(false);
-  const [userId, setUserId] = React.useState(null);
-  const [start_date, setStart_date] = React.useState();
-  const [end_date, setEnd_date] = React.useState();
-  const [riderId, setRiderId] = React.useState();
-  const handleChange = (event) => {
-    setRiderId(event.target.value);
-  };
+  const [productDetails, setproductDetails] = useState(null);
+  const [locationPricesData, setLocationPricesData] = useState([]);
+
   const history = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   const redirect = () => {
     history(RouteEnum.PRODUCT_MANAGEMENT);
   };
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const getProductbyId = UserApi?.useGetProductsByIdQuery({ productId: id });
+  const singleProduct = getProductbyId?.data?.data?.product;
+  useEffect(() => {
+    // setcurrentSingleProduct(singleProduct?.product_images[0]?.image);
+    console.log(singleProduct);
+    setproductDetails({
+      ...singleProduct,
+      category_id: singleProduct?.category?.id,
+      weight: singleProduct?.specification,
+      volume: singleProduct?.specification,
+    });
+    setLocationPricesData(
+      singleProduct?.product_prices?.map((e) => ({
+        location: e?.region,
+        companyPrice: e?.companyPrice || "",
+        minPrice: e?.min,
+        maxPrice: e?.max,
+      }))
+    );
+  }, [singleProduct]);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  // const getUserQueryResult = UserApi?.useGetUserQuery({ userId });
-  // const user = getUserQueryResult?.data?.data;
-
-  // const getHistoryQueryResult = UserApi?.useGetHistoryQuery({
-  //   to: end_date,
-  //   from: start_date,
-  //   riderId: riderId,
-  // });
   const getAllCategories = UserApi?.useGetCategoriesQuery();
 
   const allCategories = getAllCategories?.data?.data?.categories || [];
@@ -86,11 +89,12 @@ function Trips() {
   console.log(getAllCategories);
 
   const getSubCategoryQueryResult = UserApi?.useGetSubCategoriesQuery({
-    categoryId: productDetails.category_id,
+    categoryId: productDetails?.category_id,
   });
   const subCategories =
-    getSubCategoryQueryResult?.data?.data?.sub_categories || [];
+    getSubCategoryQueryResult?.data?.data?.sub_category || [];
 
+  // const allBikes = getAllBikesQueryResult?.data?.data;
   const availability = [
     {
       id: "available",
@@ -99,79 +103,130 @@ function Trips() {
     { id: "Unavailable", name: "unavailable" },
     { id: "Discontinued", name: "Discontinued" },
   ];
-  const [anchorEl2, setAnchorEl2] = React.useState(null);
-  const opens = Boolean(anchorEl2);
-  const handleClick2 = (event) => {
-    setAnchorEl2(event.currentTarget);
-  };
-  const handleClose2 = (name) => {
-    setAnchorEl2(null);
-    setfiltername(name);
-  };
 
-  const data = [
+  const locations = [
     {
-      id: "#0007366388",
-      name: "Relaxer",
-      age: "Hair Care",
-      city: "N 12344",
-      country: "PENDING",
+      id: "south-west",
+      name: "South-West",
     },
+    { id: "south-east", name: "South-East" },
+    { id: "south-south", name: "South-South" },
     {
-      id: "#0007366388",
-      name: "Relaxer",
-      age: "Hair Care",
-      city: "N 12344",
-      country: "PENDING",
+      id: "north-west",
+      name: "North-West",
     },
-    {
-      id: "#0007366388",
-      name: "Relaxer",
-      age: "Hair Care",
-      city: "N 12344",
-      country: "PENDING",
-    },
+    { id: "north-east", name: "North-East" },
+    { id: "north-central", name: "North-central" },
   ];
-
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "70%",
-    minHeight: "700px",
-    bgcolor: "background.paper",
-    borderRadius: "3%",
-    boxShadow: 24,
-    p: 4,
-  };
 
   let variants = { color: "yellow", lights: "yes" };
   let tags = ["overall", "rain coat"];
   let specification = { weight: "5kg", volume: "2cl" };
 
   const createProduct = async () => {
+    console.log(locationPricesData?.length);
+    if (!productDetails?.category_id)
+      return enqueueSnackbar("Please add category", {
+        variant: "error",
+      });
+    if (!specification)
+      return enqueueSnackbar("Please add specification", {
+        variant: "error",
+      });
+    if (!productDetails?.sub_category_id)
+      return enqueueSnackbar("Please add subcategory", {
+        variant: "error",
+      });
+
+    if (!productDetails?.name)
+      return enqueueSnackbar("Please add product name", {
+        variant: "error",
+      });
+    if (!productDetails?.description)
+      return enqueueSnackbar("Please add product description", {
+        variant: "error",
+      });
+    if (!productDetails?.availability)
+      return enqueueSnackbar("Please add product availability", {
+        variant: "error",
+      });
+    if (!productDetails?.volume)
+      return enqueueSnackbar("Please add product volume", {
+        variant: "error",
+      });
+    if (!productDetails?.weight)
+      return enqueueSnackbar("Please add product weight", {
+        variant: "error",
+      });
+    // if (productDetails?.images?.length < 1)
+    //   return enqueueSnackbar(
+    //     "Please make sure you have added atleast one image of the product",
+    //     {
+    //       variant: "error",
+    //     }
+    //   );
+
+    if (locationPricesData?.length < 6)
+      return enqueueSnackbar("Please add Prices for all 6 geopolitical zones", {
+        variant: "error",
+      });
+
+    if (!variants)
+      return enqueueSnackbar("Please add product variants", {
+        variant: "success",
+      });
+    if (!tags)
+      return enqueueSnackbar("Product added product tags", {
+        variant: "success",
+      });
+
     const formData = new FormData();
-    formData.append("category_id", productDetails.category_id);
-    formData.append("sub_category_id", productDetails.sub_category_id);
-    formData.append("name", productDetails.name);
-    formData.append("description", productDetails.description);
+    formData.append("category_id", productDetails?.category_id);
+    formData.append("sub_category_id", productDetails?.sub_category_id);
+    formData.append("name", productDetails?.name);
+    formData.append("description", productDetails?.description);
     // formData.append("specification", null);
-    formData.append("availability", productDetails.availability);
+    formData.append("availability", productDetails?.availability);
     // formData.append("images", productDetails.images);
     formData.append("variants", JSON.stringify(variants));
     formData.append("tags", JSON.stringify(tags));
-    formData.append("specification", JSON.stringify(specification));
-    formData.append("images[0]", productDetails.images);
-    formData.append(" prices[0][region]", 20);
-    formData.append(" prices[0][min]", 2);
-    formData.append(" prices[0][max]", 200);
+    formData.append(
+      "specification",
+      JSON.stringify({
+        weight: productDetails?.weight,
+        volume: productDetails?.volume,
+      })
+    );
+    // formData.append("images[0]", productDetails.images);
+
+    locationPricesData.forEach((price, index) => {
+      formData.append(`prices[${index}][region]`, price.location);
+      formData.append(`prices[${index}][min]`, price.minPrice);
+      formData.append(`prices[${index}][max]`, price.maxPrice);
+    });
+
+    // productDetails?.images.forEach((image, index) => {
+    //   formData.append(`images[${index}]`, image);
+    // });
 
     const res = await post({
-      endpoint: "product",
+      endpoint: `product/update/${id}`,
       body: formData,
       // auth: false,
     });
+
+    console.log(res);
+    if (res?.status == 200) {
+      enqueueSnackbar("Product added Successfully", {
+        variant: "success",
+      });
+
+      redirect(RouteEnum?.PRODUCT_MANAGEMENT);
+    } else {
+      enqueueSnackbar(res?.data?.message, {
+        variant: "danger",
+      });
+    }
     //     category_id
     // 55d716d0-75c6-43db-90cf-dc0fea804ad7
 
@@ -216,13 +271,6 @@ function Trips() {
     // 20
   };
 
-  const [valuez, setValue] = React.useState("one");
-
-  const handleChangeTab = (event, newValue) => {
-    setValue(newValue);
-    console.log(newValue);
-  };
-
   const { Dragger } = Upload;
   const props = {
     name: "file",
@@ -234,13 +282,18 @@ function Trips() {
         console.log(info.file);
         setproductDetails({
           ...productDetails,
-          images: info.file.originFileObj,
+          images: [...productDetails?.images, info.file.originFileObj],
+        });
+
+        console.log({
+          ...productDetails,
+          images: [...productDetails?.images, info.file.originFileObj],
         });
       }
       if (status === "done") {
         message.success(`${info.file.name} file uploaded successfully.`);
       } else if (status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
+        // message.error(`${info.file.name} file upload failed.`);
       }
     },
     onDrop(e) {
@@ -256,8 +309,16 @@ function Trips() {
       [e.target.name]: e.target.value,
     });
   };
+
+  const deletePrice = (id) => {
+    console.log(locationPricesData);
+    console.log(id);
+    setLocationPricesData([
+      ...locationPricesData?.filter((e) => e?.location !== id),
+    ]);
+  };
   return (
-    <div className="relative w-full ">
+    <div className="relative w-full pb-10">
       <div className="mb-8 mt-8 flex justify-between">
         <Typography variant="h5" className="font-bold">
           New Product
@@ -284,6 +345,7 @@ function Trips() {
                 <div className="w-full ">
                   <Typography className="font-bold">Product Name</Typography>
                   <TextField
+                    value={productDetails?.name}
                     name="name"
                     onChange={onChange}
                     className="w-full"
@@ -298,6 +360,7 @@ function Trips() {
                     name="description"
                     onChange={onChange}
                     multiline
+                    value={productDetails?.description}
                     rows={5}
                     className="w-full"
                     fullWidth
@@ -314,7 +377,7 @@ function Trips() {
                 <Typography className="font-bold">Media</Typography>
               </div>
               <div className=" flex gap-5 mt-5">
-                <Dragger
+                {/* <Dragger
                   className="h-60  w-full text-center flex flex-col justify-center items-center"
                   {...props}
                 >
@@ -330,11 +393,13 @@ function Trips() {
                   <p className="ant-upload-hint text-[#98A2B3]">
                     PNG, JPG or GIF (max. 800x400px)
                   </p>
-                </Dragger>
+                </Dragger> */}
+
                 {/* <Card className="h-60 w-full text-center flex flex-col justify-center">
         
                   </Card> */}
               </div>
+              <PictureWall productDetails ={productDetails} images={productDetails?.product_images} />
             </div>
             <Divider />
           </div>
@@ -342,20 +407,46 @@ function Trips() {
             <Typography className="font-bold">Pricing Information</Typography>
             <div className="mt-8">
               <div className="w-full justify-between ">
-                <div className="w-full ">
+                {/* <div className="w-full ">
                   <Typography className="font-bold">Location</Typography>
                   <TextField
                     name="location"
                     onChange={onChange}
                     className="w-full"
                     fullWidth
-                  />
+                  /> 
+
+                </div>*/}
+                <div className="w-full mt-4">
+                  <InputLabel className="text-left mb-2">Location</InputLabel>
+                  <TextField
+                    onChange={(e) => {
+                      onChange(e);
+                      // getLgas(e.target.value);
+                    }}
+                    fullWidth
+                    id="outlined-select-currency"
+                    select
+                    // label="Select"
+                    value={productDetails?.location}
+                    name="location"
+                    // value={completeRegFormData?.state_id}
+
+                    // helperText="Please select your currency"
+                  >
+                    {locations?.map((option) => (
+                      <MenuItem key={option.id} value={option?.id}>
+                        {option?.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
                 </div>
               </div>
               <div className="w-full justify-between mt-4">
                 <div className="w-full ">
                   <Typography className="font-bold">Company Price</Typography>
                   <TextField
+                    value={productDetails?.companyPrice}
                     name="companyPrice"
                     onChange={onChange}
                     className="w-full"
@@ -387,29 +478,108 @@ function Trips() {
                   />
                 </div>
               </div>
-              <Divider />
+              <Button
+                className="mt-3"
+                onClick={() => {
+                  locationPricesData?.find(
+                    (e) => e?.location == productDetails?.location
+                  )
+                    ? message.error("This location has already been added")
+                    : setLocationPricesData([
+                        ...locationPricesData,
+                        {
+                          location: productDetails?.location,
+                          companyPrice: productDetails?.companyPrice,
+                          minPrice: productDetails?.minPrice,
+                          maxPrice: productDetails?.maxPrice,
+                        },
+                      ]);
+                }}
+              >
+                Add +
+              </Button>
+
+              {/* <Divider /> */}
+
+              {locationPricesData?.length > 0 && (
+                <div className="w-full mt-2">
+                  <div className="heading border-2 border-primary-main grid grid-cols-4 w-full gap-2 p-1">
+                    <Typography className="font-bold text-primary-main text-center">
+                      Location
+                    </Typography>
+                    <Typography className="font-bold text-primary-main text-center">
+                      Price
+                    </Typography>
+                    <Typography className="font-bold text-primary-main text-center">
+                      Price (Min)
+                    </Typography>
+                    <Typography className="font-bold text-primary-main text-center">
+                      Price (Max)
+                    </Typography>
+                  </div>
+
+                  {locationPricesData?.map((e) => (
+                    <div className="heading border border-primary-main grid grid-cols-4 p-2">
+                      <Typography className="text-center">
+                        {e?.location}
+                      </Typography>
+                      <Typography className="text-center">
+                        {e?.companyPrice}
+                      </Typography>
+                      <Typography className="text-center">
+                        {e?.minPrice}
+                      </Typography>
+                      <Typography className="text-center flex justify-between">
+                        <Typography className="ml-3">{e?.maxPrice}</Typography>
+                        <DeleteOutlineRounded
+                          onClick={() => deletePrice(e?.location)}
+                          className="hover:text-red-500 cursor-pointer"
+                        />
+                      </Typography>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>{" "}
-          <div className="w-full flex gap-4 justify-between mt-4">
+          <div className="w-full flex gap-4 justify-between bg-white p-4 mt-4">
             <div className="w-full ">
-              <Typography className="font-bold">Specification</Typography>
+              <Typography className="font-bold">Volume</Typography>
               <TextField
-                name="specification"
-                // onChange={onChange}
+                name="volume"
+                placeholder="L x W x H"
+                value={productDetails?.volume}
+                onChange={onChange}
                 className="w-full"
                 fullWidth
               />
             </div>
             <div className="w-full ">
-              <Typography className="font-bold">Description</Typography>
+              <Typography className="font-bold">Weight</Typography>
               <TextField
-                name="maxPrice"
-                // onChange={onChange}
+                name="weight"
+                placeholder="0g"
+                value={productDetails?.weight}
+                onChange={onChange}
                 className="w-full"
                 fullWidth
               />
             </div>
           </div>
+          {/* <Button
+            className="mt-3"
+            onClick={() => {
+              setSpecDescriptionData([
+                ...specDescriptionData,
+                {
+                  specification: specDescriptionData?.specification,
+                  specDesc: specDescriptionData?.specDesc,
+                },
+              ]);
+            }}
+          >
+            Add +
+          </Button> */}
         </div>
 
         <div className="w-2/5">
@@ -435,6 +605,11 @@ function Trips() {
                     select
                     // label="Select"
                     name="category_id"
+                    value={
+                      (productDetails?.category_id &&
+                        productDetails?.category_id) ||
+                      ""
+                    }
                     // value={completeRegFormData?.state_id}
 
                     // helperText="Please select your currency"
@@ -460,7 +635,11 @@ function Trips() {
                   select
                   // label="Select"
                   name="sub_category_id"
-                  // value={completeRegFormData?.state_id}
+                  value={
+                    (productDetails?.sub_category_id &&
+                      productDetails?.sub_category_id) ||
+                    ""
+                  }
 
                   // helperText="Please select your currency"
                 >
@@ -488,6 +667,7 @@ function Trips() {
                   <TextField
                     name="tags"
                     onChange={onChange}
+                    value={productDetails?.tags}
                     className="w-full"
                     fullWidth
                   />
@@ -514,7 +694,7 @@ function Trips() {
                 </div> */}
                 <div className="w-full mt-4">
                   <InputLabel className="text-left mb-2">
-                    Availability
+                    Availability {productDetails?.availability}
                   </InputLabel>
                   <TextField
                     onChange={(e) => {
@@ -526,6 +706,11 @@ function Trips() {
                     select
                     // label="Select"
                     name="availability"
+                    value={
+                      (productDetails?.availability &&
+                        productDetails?.availability) ||
+                      ""
+                    }
                     // value={completeRegFormData?.state_id}
 
                     // helperText="Please select your currency"
@@ -549,7 +734,9 @@ function Trips() {
                   <Typography className="font-bold">Variant</Typography>
                   <TextField
                     name="variants"
+                    value={productDetails?.variants}
                     onChange={onChange}
+                    placeholder="colors,sizes etc"
                     className="w-full"
                     fullWidth
                   />
@@ -559,7 +746,9 @@ function Trips() {
                 <div className="w-full ">
                   <Typography className="font-bold">attribute</Typography>
                   <TextField
+                    value={productDetails?.attribute}
                     name="attribute"
+                    placeholder="Blue, 3xl etc"
                     onChange={onChange}
                     className="w-full"
                     fullWidth
@@ -574,4 +763,4 @@ function Trips() {
   );
 }
 
-export default Trips;
+export default EditProducts;

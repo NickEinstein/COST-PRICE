@@ -44,7 +44,6 @@ function SingleProduct() {
   const getProductbyId = UserApi?.useGetProductsByIdQuery({ productId: id });
   const singleProduct = getProductbyId?.data?.data?.product;
 
-  // const allBikes = getAllBikesQueryResult?.data?.data;
 
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const opens = Boolean(anchorEl2);

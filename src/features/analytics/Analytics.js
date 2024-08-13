@@ -67,9 +67,7 @@ function Dashboard(props) {
 
 
 
-  const getAllBikesQueryResult = UserApi?.useGetAllBikesQuery();
-
-  const allBikes = getAllBikesQueryResult?.data?.data;
+  
 
   useEffect(() => {
     earnings

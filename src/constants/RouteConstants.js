@@ -9,6 +9,8 @@ export const RouteEnum = {
   ANALYTICS: "/analytics",
   NEW_PRODUCT_PAGE: "/new-product",
   SINGLE_PRODUCT_PAGE: "/single-product",
+  EDIT_PRODUCT_PAGEs: "/edit-product/:id",
+  EDIT_PRODUCT_PAGE: "/edit-product",
   SINGLE_PRODUCT_PAGEs: "/single-product/:id",
   MERCHANT_MANAGEMENT: "/merchant-management",
   MERCHANT_DETAILs: "/merchant-details",

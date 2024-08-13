@@ -42,7 +42,7 @@ import { message, Upload } from "antd";
 import { RouteEnum } from "constants/RouteConstants";
 import { useSnackbar } from "notistack";
 
-function Trips() {
+function ProductManagement() {
   const { enqueueSnackbar } = useSnackbar();
 
   const [open, setOpen] = React.useState(false);
@@ -376,7 +376,11 @@ function Trips() {
                         horizontal: "right",
                       }}
                     >
-                      <MenuItem className="flex gap-2" onClick={handleClose}>
+                      <MenuItem className="flex gap-2" 
+                       onClick={() => {
+                        history(`${RouteEnum.EDIT_PRODUCT_PAGE}/${row.id}`);
+                        handleClose();
+                      }}>
                         <AiFillEdit /> Edit
                       </MenuItem>
                       <MenuItem
@@ -492,4 +496,4 @@ function Trips() {
   );
 }
 
-export default Trips;
+export default ProductManagement;

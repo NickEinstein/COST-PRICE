@@ -80,10 +80,7 @@ function Trips() {
 
   const allHistory = getHistoryQueryResult?.data?.data;
 
-  const getAllBikesQueryResult = UserApi?.useGetAllBikesQuery();
-
-  const allBikes = getAllBikesQueryResult?.data?.data;
-
+  
   function createData(
     paymentStatus,
     roadMapUrl,

@@ -69,20 +69,8 @@ function PurchaseHistoryOrder() {
     setAnchorEl(null);
   };
 
-  const getUserQueryResult = UserApi?.useGetUserQuery({ userId });
-  const user = getUserQueryResult?.data?.data;
-
-  const getHistoryQueryResult = UserApi?.useGetHistoryQuery({
-    to: end_date,
-    from: start_date,
-    riderId: riderId,
-  });
-
-  const allHistory = getHistoryQueryResult?.data?.data;
-
-  const getAllBikesQueryResult = UserApi?.useGetAllBikesQuery();
-
-  const allBikes = getAllBikesQueryResult?.data?.data;
+  
+  
 
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const opens = Boolean(anchorEl2);

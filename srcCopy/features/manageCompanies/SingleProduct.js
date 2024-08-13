@@ -78,12 +78,7 @@ function SingleProduct() {
     riderId: riderId,
   });
 
-  // const allHistory = getHistoryQueryResult?.data?.data;
-
-  const getAllBikesQueryResult = UserApi?.useGetCategoriesQuery();
-
-  // const allBikes = getAllBikesQueryResult?.data?.data;
-
+  
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const opens = Boolean(anchorEl2);
   const handleClick2 = (event) => {

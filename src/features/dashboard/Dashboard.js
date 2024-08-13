@@ -66,10 +66,7 @@ function Dashboard(props) {
   const getMonthlyTripsResult = UserApi?.useGetTripsByMonthQuery();
 
   
-  const getAllBikesQueryResult = UserApi?.useGetAllBikesQuery();
-
-  const allBikes = getAllBikesQueryResult?.data?.data;
-
+  
   useEffect(() => {
     earnings
       ? setCompanyMonthly(getMonthlyEarningsResult?.data?.data)

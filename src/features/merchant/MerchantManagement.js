@@ -42,7 +42,7 @@ import fileUpload from "assets/dashboard/file upload states.svg";
 import { message, Upload } from "antd";
 import { RouteEnum } from "constants/RouteConstants";
 
-function Trips() {
+function MerchantManagement() {
   const [open, setOpen] = React.useState(false);
   const [filtername, setfiltername] = React.useState("Select Filter");
   const [showBikeDetails, setShowBikeDetails] = React.useState(false);
@@ -316,8 +316,16 @@ function Trips() {
                   {/* <TableCell>{row?.user?.merchPrice || "-"}</TableCell> */}
                   <TableCell>{row?.user?.type?.toUpperCase() || "-"}</TableCell>
                   <TableCell>
-                    <Typography className="p-1 bg-[#FFC60029] text-[#FFC600] text-center w-4/5">
-                      {row?.user?.country || "Pending"}
+                    <Typography
+                      className={`p-1  text-center w-4/5 ${
+                        row?.unverified_products_count > 0
+                          ? "bg-[#FFC60029] text-[#FFC600]"
+                          : " bg-green-400/30 text-[#0F973D]"
+                      }`}
+                    >
+                      {row?.unverified_products_count > 0
+                        ? "Pending"
+                        : "Verified"}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -341,7 +349,9 @@ function Trips() {
                       <MenuItem
                         className="flex gap-2"
                         onClick={() => {
-                          redirect(`${RouteEnum.MERCHANT_DETAILs}/${row?.user?.id}`);
+                          redirect(
+                            `${RouteEnum.MERCHANT_DETAILs}/${row?.user?.id}`
+                          );
                           handleClose();
                         }}
                       >
@@ -445,4 +455,4 @@ function Trips() {
   );
 }
 
-export default Trips;
+export default MerchantManagement;

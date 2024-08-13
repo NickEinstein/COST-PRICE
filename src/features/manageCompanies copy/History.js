@@ -42,7 +42,7 @@ import { TiEye } from "react-icons/ti";
 import fileUpload from "assets/dashboard/file upload states.svg";
 import { message, Upload } from "antd";
 
-function Trips() {
+function ProductManagement() {
   const [open, setOpen] = React.useState(false);
   const [filtername, setfiltername] = React.useState("Select Filter");
   const [showBikeDetails, setShowBikeDetails] = React.useState(false);
@@ -515,4 +515,4 @@ function Trips() {
   );
 }
 
-export default Trips;
+export default ProductManagement;

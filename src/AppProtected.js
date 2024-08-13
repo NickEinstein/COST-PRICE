@@ -47,11 +47,15 @@ const ROUTES = configureRoutes([
 
   {
     path: RouteEnum.NEW_PRODUCT_PAGE,
-    element: lazy(() => import("features/manageCompanies/NewProductPage.js")),
+    element: lazy(() => import("features/manageCompaniesProducts/NewProductPage.js")),
   },
   {
     path: RouteEnum.SINGLE_PRODUCT_PAGEs,
-    element: lazy(() => import("features/manageCompanies/SingleProduct.js")),
+    element: lazy(() => import("features/manageCompaniesProducts/SingleProduct.js")),
+  },
+  {
+    path: RouteEnum.EDIT_PRODUCT_PAGEs,
+    element: lazy(() => import("features/manageCompaniesProducts/EditProductPage")),
   },
   {
     path: RouteEnum.ANALYTICS,
@@ -59,7 +63,7 @@ const ROUTES = configureRoutes([
   },
   {
     path: RouteEnum.PRODUCT_MANAGEMENT,
-    element: lazy(() => import("features/manageCompanies/History")),
+    element: lazy(() => import("features/manageCompaniesProducts/History")),
   },
   {
     path: RouteEnum.MERCHANT_MANAGEMENT,
@@ -71,20 +75,13 @@ const ROUTES = configureRoutes([
   },
   {
     path: RouteEnum.MERCHANT_PRODUCT,
-    element: lazy(() => import("features/manageCompanies/SingleProduct")),
+    element: lazy(() => import("features/manageCompaniesProducts/SingleProduct")),
   },
   // {
   //   path: RouteEnum.PURCHASE_ORDER,
   //   element: lazy(() => import("features/merchant/PurchaseHistoryOrder")),
   // },
-  {
-    path: RouteEnum.MANAGE_RIDERS,
-    element: lazy(() => import("features/wallet/Wallet")),
-  },
-  {
-    path: RouteEnum.TRIPS,
-    element: lazy(() => import("features/manageriders/ManageBikes")),
-  },
+ 
   {
     path: RouteEnum.MAPS,
     element: lazy(() => import("features/maps/Maps")),

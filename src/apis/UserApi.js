@@ -19,15 +19,25 @@ export const UserApi = todoorsApi.injectEndpoints({
       }),
     }),
 
-    verifyProoduct: builder.mutation({
+    updateProoduct: builder.mutation({
       query: (config) => ({
-        url: `${BASE_URL}/product_listing/verify-product-listing/${config?.data?.listing_id}`,
+        url: `${BASE_URL}/product/update/${config?.data?.product_id}`,
 
         method: "POST",
         ...config,
       }),
     }),
+
     unVerifyProoduct: builder.mutation({
+      query: (config) => ({
+        url: `${BASE_URL}/product_listing/unverify-product-listing/${config?.data?.listing_id}`,
+
+        method: "POST",
+        // ...config,
+      }),
+    }),
+
+    VerifyProoduct: builder.mutation({
       query: (config) => ({
         url: `${BASE_URL}/product_listing/verify-product-listing/${config?.data?.listing_id}`,
 
@@ -95,16 +105,6 @@ export const UserApi = todoorsApi.injectEndpoints({
       }),
     }),
 
-    getAllBikes: builder.query({
-      query: (config) => {
-        return {
-          url: `${BASE_URL}/company/bikes`,
-          method: "GET",
-          ...config,
-        };
-      },
-    }),
-
     getProducts: builder.query({
       query: (config) => {
         return {
@@ -137,8 +137,11 @@ export const UserApi = todoorsApi.injectEndpoints({
 
     getSubCategories: builder.query({
       query: (config) => {
+        const { categoryId } = config;
+        console.log(config)
+
         return {
-          url: `${BASE_URL}/sub_category`,
+          url: `${BASE_URL}/sub_category/category/${categoryId}`,
           method: "GET",
           ...config,
         };
