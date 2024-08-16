@@ -90,8 +90,8 @@ function ProductManagement() {
     setAnchorEl2(event.currentTarget);
   };
   const handleClose2 = (name) => {
-    setAnchorEl2(null);
-    setfiltername(name);
+    // setAnchorEl2(null);
+    // setfiltername(name);
   };
 
   const data = [
@@ -172,11 +172,11 @@ function ProductManagement() {
         </div>
 
         <div className="mb-8 flex justify-between">
-          <Typography variant="h5" className="font-bold">
+          <Typography variant="h5" className="font-bold text-primary-main">
             Product Management
           </Typography>
 
-          <Button onClick={() => redirect()}> Add New Product</Button>
+          <Button onClick={() => redirect()}> + Add New Product</Button>
         </div>
       </div>
       {true && (
@@ -225,7 +225,7 @@ function ProductManagement() {
                   <Menu
                     anchorEl={anchorEl2}
                     open={Boolean(anchorEl2)}
-                    onClose={handleClose2}
+                    // onClose={handleClose2}
                     anchorOrigin={{
                       vertical: "top",
                       horizontal: "right",

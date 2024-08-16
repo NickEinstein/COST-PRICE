@@ -109,7 +109,7 @@ function Dashboard(props) {
                   dashboard={true}
                   cutborder={true}
                   big={true}
-                  name="Rides in progress"
+                  name="Verified Merchants"
                   img={WallcardIcon4}
                   count={500}
                 />
@@ -117,7 +117,7 @@ function Dashboard(props) {
                   dashboard={true}
                   cutborder={true}
                   big={true}
-                  name="Completed"
+                  name="Total Products"
                   img={WallcardIcon3}
                   count={500}
                 />
@@ -126,7 +126,7 @@ function Dashboard(props) {
                   dashboard={true}
                   cutborder={true}
                   big={true}
-                  name="Online"
+                  name="Pending Verification"
                   img={WallcardIcon2}
                   count={500}
                 />

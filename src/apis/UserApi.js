@@ -108,7 +108,7 @@ export const UserApi = todoorsApi.injectEndpoints({
     getProducts: builder.query({
       query: (config) => {
         return {
-          url: `${BASE_URL}/product/user`,
+          url: `${BASE_URL}/product/user/mine`,
           method: "GET",
           ...config,
         };

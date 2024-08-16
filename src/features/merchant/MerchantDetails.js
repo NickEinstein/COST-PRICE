@@ -335,7 +335,7 @@ function MerchantDetails() {
             {merchanteListeedProduct &&
               merchanteListeedProduct["listed-products"]?.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell>{row.id}</TableCell>
+                  <TableCell>{row?.product_code||'#'}</TableCell>
                   <TableCell className="flex gap-2">
                     <img className="w-8 h-8" src={merchanteListeedProduct?.merchant_details?.pic} />
                     <div>

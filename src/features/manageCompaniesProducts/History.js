@@ -80,16 +80,11 @@ function ProductManagement() {
   const getUserQueryResult = UserApi?.useGetUserQuery({ userId });
   const user = getUserQueryResult?.data?.data;
 
-  const getHistoryQueryResult = UserApi?.useGetHistoryQuery({
-    to: end_date,
-    from: start_date,
-    riderId: riderId,
-  });
+  
 
-  const allHistory = getHistoryQueryResult?.data?.data;
 
   const getProductsQueryResult = UserApi?.useGetProductsQuery({
-    productId: reloadProduct,
+    // productId: reloadProduct,
   });
 
   const products = getProductsQueryResult?.data?.data?.products || [];
@@ -202,7 +197,7 @@ function ProductManagement() {
             Product Management
           </Typography>
 
-          <Button onClick={() => redirect()}> Add New Product</Button>
+          <Button onClick={() => redirect()}> + Add New Product</Button>
         </div>
       </div>
       {true && (
@@ -246,7 +241,7 @@ function ProductManagement() {
                   <Menu
                     anchorEl={anchorEl2}
                     open={Boolean(anchorEl2)}
-                    onClose={handleClose2}
+                    onClose={()=>handleClose2('Select Filter')}
                     anchorOrigin={{
                       vertical: "top",
                       horizontal: "right",
@@ -327,7 +322,7 @@ function ProductManagement() {
                 : products
               )?.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell>{row.id}</TableCell>
+                  <TableCell>{row.product_code||'#'}</TableCell>
                   <TableCell className="flex gap-2">
                     <img
                       className="w-8 h-8"
