@@ -231,7 +231,7 @@ function NewProductsPage() {
     formData.append("sub_category_id", productDetails.sub_category_id);
     formData.append("name", productDetails.name);
     formData.append("description", productDetails.description);
-    // formData.append("specification", null);
+    formData.append("company_price", productDetails?.companyPrice);
     formData.append("availability", productDetails.availability);
     // formData.append("images", productDetails.images);
     formData.append("variants", JSON.stringify(variants));
