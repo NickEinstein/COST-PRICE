@@ -390,12 +390,12 @@ const Home = () => {
                     <div className="mt-[14px]">
                       <p className="text-xs">
                         Not registered yet?{" "}
-                        <span
+                        <a href='https://costprice-web.netlify.app/register'
                           className="text-[#F7A301] text-xs font-bold cursor-pointer"
                           onClick={() => navigate("/register")}
                         >
                           Create Account
-                        </span>
+                        </a>
                       </p>
                     </div>
                   </div>
